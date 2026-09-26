@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --color-bg: #F7F5F1;
+  --color-surface: #FFFFFF;
+  --color-ink: #1F2B29;
+  --color-ink-soft: #5B6864;
+  --color-line: #DBD5C9;
+  --color-teal: #0F6B5C;
+  --color-teal-soft: #E4EEEA;
+  --color-teal-hover: #0C5A4D;
+  --color-rust: #B5502E;
+  --font-serif: 'IBM Plex Serif', Georgia, serif;
+  --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  --radius: 4px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+// Override Angular Material com as cores do projeto
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: var(--color-teal) !important;
+  --mdc-protected-button-label-text-color: #fff !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--color-teal) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--color-teal) !important;
+}
