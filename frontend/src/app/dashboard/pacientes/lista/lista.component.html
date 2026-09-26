@@ -1,0 +1,90 @@
+<div class="page-head">
+  <h1>Pacientes</h1>
+  <button class="btn" (click)="abrirNovo()">+ Novo Paciente</button>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/>
+    </svg>
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Buscar por nome ou CPF…"
+      [value]="searchTerm"
+      (input)="onSearch($any($event.target).value)"
+    >
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="alert-strip">{{ errorMessage }}</div>
+
+<div class="patient-table-wrap">
+  <table class="patient-table" *ngIf="!loading || pacientes.length > 0">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>Telefone</th>
+        <th>Nascimento</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let p of pacientes"
+        class="patient-row clickable"
+        (click)="abrirEditar(p.id)"
+      >
+        <td>
+          <div class="patient-name">{{ p.name }}</div>
+          <div class="patient-meta" *ngIf="p.email">{{ p.email }}</div>
+        </td>
+        <td class="mono">{{ p.cpf }}</td>
+        <td>{{ p.phone || '—' }}</td>
+        <td>{{ formatDate(p.birthDate) }}</td>
+        <td class="td-action">
+          <button class="icon-btn" (click)="abrirEditar(p.id); $event.stopPropagation()">Editar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="loading && pacientes.length === 0" class="empty-state">
+    Carregando…
+  </div>
+
+  <div *ngIf="!loading && pacientes.length === 0" class="empty-state">
+    <strong>Nenhum paciente encontrado</strong>
+    {{ searchTerm ? 'Tente outro termo de busca.' : 'Cadastre o primeiro paciente clicando em "+ Novo Paciente".' }}
+  </div>
+</div>
+
+<div class="pagination" *ngIf="totalElements > 0">
+  <span class="pagination-info">
+    {{ primeiroItem }}–{{ ultimoItem }} de {{ totalElements }} pacientes
+  </span>
+
+  <div class="pagination-controls">
+    <button class="icon-btn" [disabled]="page === 0" (click)="paginaAnterior()">← Anterior</button>
+    <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
+    <button class="icon-btn" [disabled]="page >= totalPages - 1" (click)="proximaPagina()">Próxima →</button>
+  </div>
+
+  <div class="page-size">
+    <span class="page-size-label">por página</span>
+    <button class="size-btn" [class.active]="pageSize === 10"  (click)="mudarTamanhoPagina(10)">10</button>
+    <button class="size-btn" [class.active]="pageSize === 20"  (click)="mudarTamanhoPagina(20)">20</button>
+    <button class="size-btn" [class.active]="pageSize === 50"  (click)="mudarTamanhoPagina(50)">50</button>
+  </div>
+</div>
+
+<!-- Modal de cadastro/edição -->
+<app-pacientes-formulario
+  *ngIf="modalAberto"
+  [pacienteId]="pacienteEditandoId"
+  (fechou)="fecharModal()"
+  (salvou)="aoSalvar()"
+>
+</app-pacientes-formulario>

@@ -8,7 +8,11 @@ const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: HomeComponent }
+      { path: '', component: HomeComponent },
+      {
+        path: 'pacientes',
+        loadChildren: () => import('./pacientes/pacientes.module').then(m => m.PacientesModule)
+      }
     ]
   }
 ];

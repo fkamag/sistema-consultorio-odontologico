@@ -1,0 +1,120 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="modal-close" (click)="fechar()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">Carregando…</div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div *ngIf="errorMessage" class="alert-strip">{{ errorMessage }}</div>
+
+      <div class="form-section">
+        <div class="section-title">Dados pessoais</div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label class="field-label" for="name">Nome completo *</label>
+            <input id="name" class="field-input" formControlName="name"
+                   [class.error]="fieldError('name','required') || fieldError('name','maxlength')"
+                   type="text" autocomplete="name">
+            <span class="field-error" *ngIf="fieldError('name','required')">Nome é obrigatório</span>
+            <span class="field-error" *ngIf="fieldError('name','maxlength')">Máximo 150 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="cpf">CPF *</label>
+            <input id="cpf" class="field-input" formControlName="cpf"
+                   [class.error]="fieldError('cpf','required') || fieldError('cpf','cpfInvalido')"
+                   type="text" placeholder="000.000.000-00" maxlength="14" appMask="cpf">
+            <span class="field-error" *ngIf="fieldError('cpf','required')">CPF é obrigatório</span>
+            <span class="field-error" *ngIf="fieldError('cpf','cpfInvalido')">CPF inválido</span>
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="birthDate">Data de nascimento</label>
+            <input id="birthDate" class="field-input" formControlName="birthDate" type="date">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="phone">Telefone</label>
+            <input id="phone" class="field-input" formControlName="phone"
+                   type="tel" placeholder="(00) 00000-0000" maxlength="15" appMask="phone">
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="email">E-mail</label>
+            <input id="email" class="field-input" formControlName="email"
+                   [class.error]="fieldError('email','email')"
+                   type="email" autocomplete="email">
+            <span class="field-error" *ngIf="fieldError('email','email')">E-mail inválido</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">Endereço</div>
+
+        <div class="form-row">
+          <div class="form-field grow3">
+            <label class="field-label" for="street">Logradouro</label>
+            <input id="street" class="field-input" formControlName="street"
+                   type="text" placeholder="Rua, Avenida, Travessa…">
+          </div>
+          <div class="form-field shrink">
+            <label class="field-label" for="number">Número</label>
+            <input id="number" class="field-input" formControlName="number" type="text">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="complement">Complemento</label>
+            <input id="complement" class="field-input" formControlName="complement"
+                   type="text" placeholder="Apto, Bloco, Sala…">
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="neighborhood">Bairro</label>
+            <input id="neighborhood" class="field-input" formControlName="neighborhood" type="text">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field grow3">
+            <label class="field-label" for="city">Cidade</label>
+            <input id="city" class="field-input" formControlName="city" type="text">
+          </div>
+          <div class="form-field shrink">
+            <label class="field-label" for="state">UF</label>
+            <input id="state" class="field-input" formControlName="state"
+                   type="text" placeholder="SP" maxlength="2" class="field-input uppercase">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">Observações</div>
+        <div class="form-row">
+          <div class="form-field full">
+            <label class="field-label" for="notes">Observações</label>
+            <textarea id="notes" class="field-input field-textarea" formControlName="notes"
+                      rows="3" placeholder="Alergias, preferências de horário, convênio…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="fechar()" [disabled]="saving">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="saving">
+          {{ saving ? 'Salvando…' : 'Salvar' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

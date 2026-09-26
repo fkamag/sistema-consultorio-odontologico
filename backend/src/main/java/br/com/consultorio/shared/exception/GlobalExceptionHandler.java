@@ -17,6 +17,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorBody(ex.getMessage()));
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorBody(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
