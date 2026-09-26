@@ -17,5 +17,5 @@ backend/*.jar
 *.log
 .DS_Store
 
-# Arquivos intermediários de documentação
-*.html
+# Arquivos de documentação/prototipagem (não rastrear HTMLs de poc na pasta docs)
+docs/*.html

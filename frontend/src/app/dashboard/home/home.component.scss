@@ -1,0 +1,62 @@
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+.page-sub {
+  color: var(--color-ink-soft);
+  font-size: 0.84rem;
+  margin: 0 0 24px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: 14px;
+}
+
+.stat-num {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.stat-label {
+  font-size: 0.76rem;
+  color: var(--color-ink-soft);
+  margin-top: 2px;
+}
+
+.empty-state {
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius);
+  padding: 30px 18px;
+  text-align: center;
+  color: var(--color-ink-soft);
+  font-size: 0.88rem;
+
+  strong {
+    display: block;
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: 1.02rem;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+}
