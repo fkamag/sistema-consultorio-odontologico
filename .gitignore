@@ -1,0 +1,21 @@
+# Frontend (Angular)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Backend (Spring Boot)
+backend/.env
+backend/target/
+backend/*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Sistema
+*.log
+.DS_Store
+
+# Arquivos intermediários de documentação
+*.html
