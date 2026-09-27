@@ -1,0 +1,157 @@
+<div class="page-head">
+  <div>
+    <h1>Auditoria</h1>
+    <p class="page-subtitle">Registro de todas as ações realizadas no sistema</p>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/>
+    </svg>
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Buscar por usuário, ação ou entidade…"
+      [value]="searchTerm"
+      (input)="onSearch($any($event.target).value)"
+    >
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label class="filter-label">De</label>
+      <input
+        class="filter-date"
+        type="date"
+        [(ngModel)]="dataInicio"
+        (ngModelChange)="onFiltroData()"
+      >
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Até</label>
+      <input
+        class="filter-date"
+        type="date"
+        [(ngModel)]="dataFim"
+        (ngModelChange)="onFiltroData()"
+      >
+    </div>
+    <button
+      class="btn-limpar"
+      *ngIf="searchTerm || dataInicio || dataFim"
+      (click)="limparFiltros()"
+    >Limpar filtros</button>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table" *ngIf="!loading || logs.length > 0">
+    <thead>
+      <tr>
+        <th>Data / Hora</th>
+        <th>Usuário</th>
+        <th>Ação</th>
+        <th>Entidade</th>
+        <th>Detalhes</th>
+        <th>IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logs" class="data-row clickable" (click)="abrirDetalhes(log)">
+        <td class="mono nowrap">{{ formatDateTime(log.createdAt) }}</td>
+        <td>
+          <div class="row-name">{{ log.userName }}</div>
+        </td>
+        <td>
+          <span class="badge" [class]="'badge--' + log.action.toLowerCase()">
+            {{ actionLabel(log.action) }}
+          </span>
+        </td>
+        <td class="text-soft">{{ entityLabel(log.entity) }}</td>
+        <td class="details-cell">{{ log.details || '—' }}</td>
+        <td class="mono text-soft">{{ log.ip || '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="loading && logs.length === 0" class="empty-state">
+    Carregando…
+  </div>
+
+  <div *ngIf="!loading && logs.length === 0" class="empty-state">
+    <strong>Nenhum registro encontrado</strong>
+    {{ searchTerm ? 'Tente outro termo de busca.' : 'Nenhuma ação foi registrada ainda.' }}
+  </div>
+</div>
+
+<!-- Modal de detalhes -->
+<div class="modal-overlay" *ngIf="logSelecionado" (click)="fecharDetalhes()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>Detalhes do Registro</h2>
+      <button class="modal-close" (click)="fecharDetalhes()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Data / Hora</span>
+        <span class="detail-value mono">{{ formatDateTime(logSelecionado.createdAt) }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Usuário</span>
+        <span class="detail-value">{{ logSelecionado.userName }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Ação</span>
+        <span class="detail-value">
+          <span class="badge" [class]="'badge--' + logSelecionado.action.toLowerCase()">
+            {{ actionLabel(logSelecionado.action) }}
+          </span>
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Entidade</span>
+        <span class="detail-value">{{ entityLabel(logSelecionado.entity) }}</span>
+      </div>
+      <div class="detail-item full">
+        <span class="detail-label">Detalhes</span>
+        <span class="detail-value">{{ logSelecionado.details || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">IP</span>
+        <span class="detail-value mono">{{ logSelecionado.ip || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">ID do registro</span>
+        <span class="detail-value mono small">{{ logSelecionado.entityId || '—' }}</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" (click)="fecharDetalhes()">Fechar</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="pagination" *ngIf="totalElements > 0">
+  <span class="pagination-info">
+    {{ primeiroItem }}–{{ ultimoItem }} de {{ totalElements }} registros
+  </span>
+
+  <div class="pagination-controls">
+    <button class="icon-btn" [disabled]="page === 0" (click)="paginaAnterior()">← Anterior</button>
+    <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
+    <button class="icon-btn" [disabled]="page >= totalPages - 1" (click)="proximaPagina()">Próxima →</button>
+  </div>
+
+  <div class="page-size">
+    <span class="page-size-label">por página</span>
+    <button class="size-btn" [class.active]="pageSize === 20"  (click)="mudarTamanhoPagina(20)">20</button>
+    <button class="size-btn" [class.active]="pageSize === 50"  (click)="mudarTamanhoPagina(50)">50</button>
+    <button class="size-btn" [class.active]="pageSize === 100" (click)="mudarTamanhoPagina(100)">100</button>
+  </div>
+</div>
