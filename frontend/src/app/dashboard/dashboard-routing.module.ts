@@ -16,6 +16,10 @@ const routes: Routes = [
       {
         path: 'usuarios',
         loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule)
+      },
+      {
+        path: 'auditoria',
+        loadChildren: () => import('./auditoria/auditoria.module').then(m => m.AuditoriaModule)
       }
     ]
   }
