@@ -178,6 +178,35 @@ class UserServiceTest {
     }
 
     @Test
+    void updateDeveLancarConflictQuandoAdminTentaAlterarProprioRole() {
+        UUID id = adminLogado.getId();
+        AppUser existente = usuario(id, "Admin", "admin@consultorio.com", AppUser.Role.ADMIN);
+        UserRequest req = new UserRequest("Admin", "admin@consultorio.com", null, "SECRETARIA");
+
+        when(repository.findById(id)).thenReturn(Optional.of(existente));
+        when(repository.existsByEmailAndIdNot(req.email(), id)).thenReturn(false);
+
+        assertThatThrownBy(() -> service.update(id, req, "127.0.0.1"))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("perfil");
+    }
+
+    @Test
+    void updateDevePermitirAlterarOutrosDadosSemMudarRole() {
+        UUID id = adminLogado.getId();
+        AppUser existente = usuario(id, "Admin", "admin@consultorio.com", AppUser.Role.ADMIN);
+        UserRequest req = new UserRequest("Admin Atualizado", "admin@consultorio.com", null, "ADMIN");
+
+        when(repository.findById(id)).thenReturn(Optional.of(existente));
+        when(repository.existsByEmailAndIdNot(req.email(), id)).thenReturn(false);
+        when(repository.save(any())).thenReturn(existente);
+
+        service.update(id, req, "127.0.0.1");
+
+        verify(repository).save(any());
+    }
+
+    @Test
     void updateDeveLancarConflictQuandoEmailPertenceAOutroUsuario() {
         UUID id = UUID.randomUUID();
         AppUser existente = usuario(id, "Ana", "ana@c.com", AppUser.Role.SECRETARIA);

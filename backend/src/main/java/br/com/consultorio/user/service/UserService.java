@@ -59,9 +59,14 @@ public class UserService {
         if (repository.existsByEmailAndIdNot(request.email(), id)) {
             throw new ConflictException("Já existe outro usuário cadastrado com este e-mail.");
         }
+        AppUser actor = currentUser();
+        AppUser.Role novoRole = AppUser.Role.valueOf(request.role());
+        if (actor != null && actor.getId().equals(id) && novoRole != user.getRole()) {
+            throw new ConflictException("Não é possível alterar o próprio perfil.");
+        }
         user.setName(request.name());
         user.setEmail(request.email());
-        user.setRole(AppUser.Role.valueOf(request.role()));
+        user.setRole(novoRole);
         if (request.password() != null && !request.password().isBlank()) {
             user.setPasswordHash(passwordEncoder.encode(request.password()));
         }
