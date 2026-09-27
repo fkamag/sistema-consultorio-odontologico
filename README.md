@@ -200,7 +200,7 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [x] Rastreabilidade de quem criou/editou cada paciente
 - [x] Endpoint `GET /api/auditoria` restrito a ADMIN
 - [x] Testes unitários do AuditService
-- [ ] Tela de visualização do log de auditoria (frontend)
+- [x] Tela de visualização do log de auditoria (frontend)
 
 ### Usuários
 
