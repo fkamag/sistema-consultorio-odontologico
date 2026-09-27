@@ -1,0 +1,92 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="modal-close" (click)="fechar()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">Carregando…</div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div *ngIf="errorMessage" class="alert-strip">{{ errorMessage }}</div>
+
+      <div class="form-section">
+        <div class="section-title">Dados do usuário</div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label class="field-label" for="name">Nome completo *</label>
+            <input id="name" class="field-input" formControlName="name"
+                   [class.error]="fieldError('name','required') || fieldError('name','maxlength')"
+                   type="text" autocomplete="name">
+            <span class="field-error" *ngIf="fieldError('name','required')">Nome é obrigatório</span>
+            <span class="field-error" *ngIf="fieldError('name','maxlength')">Máximo 150 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label class="field-label" for="email">E-mail *</label>
+            <input id="email" class="field-input" formControlName="email"
+                   [class.error]="fieldError('email','required') || fieldError('email','email')"
+                   type="email" autocomplete="email">
+            <span class="field-error" *ngIf="fieldError('email','required')">E-mail é obrigatório</span>
+            <span class="field-error" *ngIf="fieldError('email','email')">E-mail inválido</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="role">Perfil *</label>
+            <select id="role" class="field-input" formControlName="role">
+              <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">
+          Senha
+          <span class="section-hint" *ngIf="isEdit">— deixe em branco para manter a atual</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label class="field-label" for="password">
+              {{ isEdit ? 'Nova senha' : 'Senha *' }}
+            </label>
+            <div class="password-wrap">
+              <input
+                id="password"
+                class="field-input"
+                formControlName="password"
+                [class.error]="fieldError('password','required') || fieldError('password','minlength') || fieldError('password','pattern')"
+                [type]="mostrarSenha ? 'text' : 'password'"
+                autocomplete="new-password"
+              >
+              <button type="button" class="toggle-senha" (click)="mostrarSenha = !mostrarSenha">
+                {{ mostrarSenha ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+            <span class="field-error" *ngIf="fieldError('password','required')">Senha é obrigatória</span>
+            <span class="field-error" *ngIf="fieldError('password','minlength')">Mínimo 8 caracteres</span>
+            <span class="field-error" *ngIf="fieldError('password','pattern')">
+              Deve conter letra maiúscula, número e caractere especial
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="fechar()" [disabled]="saving">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="saving">
+          {{ saving ? 'Salvando…' : 'Salvar' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
