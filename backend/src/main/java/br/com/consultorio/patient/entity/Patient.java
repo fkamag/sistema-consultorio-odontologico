@@ -69,6 +69,16 @@ public class Patient {
 
     private LocalDateTime deletedAt;
 
+    private UUID createdById;
+
+    @Column(length = 150)
+    private String createdByName;
+
+    private UUID updatedById;
+
+    @Column(length = 150)
+    private String updatedByName;
+
     @PreUpdate
     void onUpdate() {
         this.updatedAt = LocalDateTime.now();

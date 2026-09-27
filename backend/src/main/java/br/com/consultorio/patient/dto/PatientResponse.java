@@ -22,7 +22,9 @@ public record PatientResponse(
         String notes,
         boolean active,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        String createdByName,
+        LocalDateTime updatedAt,
+        String updatedByName
 ) {
     public static PatientResponse from(Patient p) {
         return new PatientResponse(
@@ -41,7 +43,9 @@ public record PatientResponse(
                 p.getNotes(),
                 p.isActive(),
                 p.getCreatedAt(),
-                p.getUpdatedAt()
+                p.getCreatedByName(),
+                p.getUpdatedAt(),
+                p.getUpdatedByName()
         );
     }
 }

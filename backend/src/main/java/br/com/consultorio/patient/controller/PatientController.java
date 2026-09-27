@@ -3,6 +3,7 @@ package br.com.consultorio.patient.controller;
 import br.com.consultorio.patient.dto.PatientRequest;
 import br.com.consultorio.patient.dto.PatientResponse;
 import br.com.consultorio.patient.service.PatientService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,8 +38,10 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA')")
-    public ResponseEntity<PatientResponse> create(@Valid @RequestBody PatientRequest request) {
-        PatientResponse created = service.create(request);
+    public ResponseEntity<PatientResponse> create(
+            @Valid @RequestBody PatientRequest request,
+            HttpServletRequest httpRequest) {
+        PatientResponse created = service.create(request, resolveIp(httpRequest));
         return ResponseEntity
                 .created(URI.create("/api/pacientes/" + created.id()))
                 .body(created);
@@ -46,14 +49,24 @@ public class PatientController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA')")
-    public PatientResponse update(@PathVariable UUID id, @Valid @RequestBody PatientRequest request) {
-        return service.update(id, request);
+    public PatientResponse update(
+            @PathVariable UUID id,
+            @Valid @RequestBody PatientRequest request,
+            HttpServletRequest httpRequest) {
+        return service.update(id, request, resolveIp(httpRequest));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA')")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable UUID id, HttpServletRequest httpRequest) {
+        service.delete(id, resolveIp(httpRequest));
         return ResponseEntity.noContent().build();
+    }
+
+    private String resolveIp(HttpServletRequest req) {
+        String forwarded = req.getHeader("X-Forwarded-For");
+        return (forwarded != null && !forwarded.isBlank())
+                ? forwarded.split(",")[0].trim()
+                : req.getRemoteAddr();
     }
 }
