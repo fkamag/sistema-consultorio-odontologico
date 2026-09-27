@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { Paciente, PageResponse } from '../models/paciente.models';
 import { PacienteService } from '../services/paciente.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-pacientes-lista',
@@ -16,14 +17,16 @@ export class ListaComponent implements OnInit {
   pageSize = 20;
   loading = false;
   searchTerm = '';
-  errorMessage = '';
 
   modalAberto = false;
   pacienteEditandoId: string | null = null;
 
   private search$ = new Subject<string>();
 
-  constructor(private pacienteService: PacienteService) {}
+  constructor(
+    private pacienteService: PacienteService,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.search$.pipe(
@@ -49,7 +52,6 @@ export class ListaComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.errorMessage = '';
     this.pacienteService.list(this.searchTerm, this.page, this.pageSize).subscribe({
       next: res => this.handleResponse(res),
       error: () => this.handleError()
@@ -63,7 +65,7 @@ export class ListaComponent implements OnInit {
   }
 
   private handleError(): void {
-    this.errorMessage = 'Erro ao carregar pacientes.';
+    this.toast.error('Erro ao carregar pacientes.');
     this.loading = false;
   }
 

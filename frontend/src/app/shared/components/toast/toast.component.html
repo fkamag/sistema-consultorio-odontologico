@@ -1,0 +1,19 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of toasts$ | async; trackBy: trackById"
+    class="toast"
+    [class.toast--success]="toast.type === 'success'"
+    [class.toast--error]="toast.type === 'error'"
+  >
+    <svg *ngIf="toast.type === 'success'" class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/>
+    </svg>
+    <svg *ngIf="toast.type === 'error'" class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>
+    </svg>
+
+    <span class="toast-message">{{ toast.message }}</span>
+
+    <button class="toast-close" (click)="fechar(toast)" aria-label="Fechar">×</button>
+  </div>
+</div>

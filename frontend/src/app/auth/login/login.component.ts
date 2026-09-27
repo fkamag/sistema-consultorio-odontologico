@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -12,13 +13,13 @@ export class LoginComponent {
 
   form: FormGroup;
   loading = false;
-  errorMessage = '';
   hidePassword = true;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -30,15 +31,17 @@ export class LoginComponent {
     if (this.form.invalid) return;
 
     this.loading = true;
-    this.errorMessage = '';
 
     this.authService.login(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.toast.success('Login realizado com sucesso. Bem-vindo!');
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.status === 401
-          ? 'Email ou senha incorretos.'
-          : 'Erro ao conectar com o servidor. Tente novamente.';
+        this.toast.error(err.status === 401
+          ? 'E-mail ou senha incorretos.'
+          : 'Erro ao conectar com o servidor. Tente novamente.');
       }
     });
   }

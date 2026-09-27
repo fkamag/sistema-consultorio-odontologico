@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../services/usuario.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 const SENHA_PATTERN = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -18,7 +19,6 @@ export class FormularioComponent implements OnInit, OnChanges {
   form!: FormGroup;
   loading = false;
   saving = false;
-  errorMessage = '';
   mostrarSenha = false;
 
   readonly roles = [
@@ -29,7 +29,8 @@ export class FormularioComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -46,7 +47,6 @@ export class FormularioComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['usuarioId'] && this.form) {
       this.form.reset({ role: 'SECRETARIA' });
-      this.errorMessage = '';
       this.carregarSeEditar();
     }
   }
@@ -60,7 +60,7 @@ export class FormularioComponent implements OnInit, OnChanges {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Usuário não encontrado.';
+        this.toast.error('Usuário não encontrado.');
         this.loading = false;
       }
     });
@@ -81,7 +81,6 @@ export class FormularioComponent implements OnInit, OnChanges {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.saving = true;
-    this.errorMessage = '';
     const { name, email, password, role } = this.form.value;
     const request = { name, email, password: password || null, role };
 
@@ -90,8 +89,15 @@ export class FormularioComponent implements OnInit, OnChanges {
       : this.usuarioService.create(request);
 
     op.subscribe({
-      next: () => { this.saving = false; this.salvou.emit(); },
-      error: err => { this.errorMessage = err.error?.message || 'Erro ao salvar.'; this.saving = false; }
+      next: () => {
+        this.saving = false;
+        this.toast.success(this.usuarioId ? 'Usuário atualizado com sucesso.' : 'Usuário cadastrado com sucesso.');
+        this.salvou.emit();
+      },
+      error: err => {
+        this.toast.error(err.error?.message || 'Erro ao salvar usuário.');
+        this.saving = false;
+      }
     });
   }
 

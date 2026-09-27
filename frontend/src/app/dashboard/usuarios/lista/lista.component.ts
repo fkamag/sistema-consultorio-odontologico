@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { Usuario, PageResponse } from '../models/usuario.models';
 import { UsuarioService } from '../services/usuario.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-usuarios-lista',
@@ -16,14 +17,16 @@ export class ListaComponent implements OnInit {
   pageSize = 20;
   loading = false;
   searchTerm = '';
-  errorMessage = '';
 
   modalAberto = false;
   usuarioEditandoId: string | null = null;
 
   private search$ = new Subject<string>();
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.search$.pipe(
@@ -49,7 +52,6 @@ export class ListaComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.errorMessage = '';
     this.usuarioService.list(this.searchTerm, this.page, this.pageSize).subscribe({
       next: res => this.handleResponse(res),
       error: () => this.handleError()
@@ -63,7 +65,7 @@ export class ListaComponent implements OnInit {
   }
 
   private handleError(): void {
-    this.errorMessage = 'Erro ao carregar usuários.';
+    this.toast.error('Erro ao carregar usuários.');
     this.loading = false;
   }
 
@@ -93,9 +95,11 @@ export class ListaComponent implements OnInit {
       next: atualizado => {
         const idx = this.usuarios.findIndex(u => u.id === atualizado.id);
         if (idx !== -1) this.usuarios[idx] = atualizado;
+        const acao = atualizado.active ? 'ativado' : 'desativado';
+        this.toast.success(`Usuário ${acao} com sucesso.`);
       },
       error: err => {
-        this.errorMessage = err.error?.message || 'Erro ao alterar status do usuário.';
+        this.toast.error(err.error?.message || 'Erro ao alterar status do usuário.');
       }
     });
   }

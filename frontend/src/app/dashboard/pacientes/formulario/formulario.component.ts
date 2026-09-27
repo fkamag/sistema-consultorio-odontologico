@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PacienteService } from '../services/paciente.service';
 import { cpfValidator } from '../../../shared/validators/cpf.validator';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-pacientes-formulario',
@@ -17,11 +18,11 @@ export class FormularioComponent implements OnInit, OnChanges {
   form!: FormGroup;
   loading = false;
   saving = false;
-  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private pacienteService: PacienteService
+    private pacienteService: PacienteService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -46,7 +47,6 @@ export class FormularioComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['pacienteId'] && this.form) {
       this.form.reset();
-      this.errorMessage = '';
       this.carregarSeEditar();
     }
   }
@@ -66,7 +66,7 @@ export class FormularioComponent implements OnInit, OnChanges {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Paciente não encontrado.';
+        this.toast.error('Paciente não encontrado.');
         this.loading = false;
       }
     });
@@ -75,15 +75,21 @@ export class FormularioComponent implements OnInit, OnChanges {
   onSubmit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.saving = true;
-    this.errorMessage = '';
     const raw = this.form.value;
     const request = { ...raw, state: raw.state?.toUpperCase() || null };
     const op = this.pacienteId
       ? this.pacienteService.update(this.pacienteId, request)
       : this.pacienteService.create(request);
     op.subscribe({
-      next: () => { this.saving = false; this.salvou.emit(); },
-      error: err => { this.errorMessage = err.error?.message || 'Erro ao salvar.'; this.saving = false; }
+      next: () => {
+        this.saving = false;
+        this.toast.success(this.pacienteId ? 'Paciente atualizado com sucesso.' : 'Paciente cadastrado com sucesso.');
+        this.salvou.emit();
+      },
+      error: err => {
+        this.toast.error(err.error?.message || 'Erro ao salvar paciente.');
+        this.saving = false;
+      }
     });
   }
 

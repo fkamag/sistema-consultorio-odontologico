@@ -10,8 +10,6 @@
 
     <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <div *ngIf="errorMessage" class="alert-strip">{{ errorMessage }}</div>
-
       <div class="form-section">
         <div class="section-title">Dados pessoais</div>
 
