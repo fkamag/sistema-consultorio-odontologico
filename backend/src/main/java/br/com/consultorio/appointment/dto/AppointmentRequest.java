@@ -1,6 +1,8 @@
 package br.com.consultorio.appointment.dto;
 
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -18,5 +20,13 @@ public record AppointmentRequest(
         @Future(message = "O agendamento deve ser em uma data futura.")
         LocalDateTime startTime,
 
+        @Min(value = 10, message = "Duração mínima é 10 minutos.")
+        @Max(value = 480, message = "Duração máxima é 480 minutos.")
+        Integer durationMinutes,
+
         String notes
-) {}
+) {
+    public int duration() {
+        return durationMinutes != null ? durationMinutes : 30;
+    }
+}

@@ -27,10 +27,10 @@ public class AppointmentController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA','DENTISTA')")
     public List<AppointmentResponse> listByPeriod(
-            @RequestParam UUID dentistId,
+            @RequestParam(required = false) UUID dentistId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return service.findByDentistAndPeriod(
+        return service.findByPeriod(
                 dentistId,
                 from.atStartOfDay(),
                 to.atTime(23, 59, 59));

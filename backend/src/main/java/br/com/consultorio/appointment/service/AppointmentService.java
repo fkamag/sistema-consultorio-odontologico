@@ -38,7 +38,7 @@ public class AppointmentService {
         AppUser dentist = userRepository.findById(request.dentistId())
                 .orElseThrow(() -> new NotFoundException("Dentista não encontrado."));
 
-        LocalDateTime end = request.startTime().plusMinutes(30);
+        LocalDateTime end = request.startTime().plusMinutes(request.duration());
         if (repository.existsConflict(request.dentistId(), request.startTime(), end, null)) {
             throw new ConflictException("Já existe um agendamento neste horário para o dentista selecionado.");
         }
@@ -48,6 +48,7 @@ public class AppointmentService {
                 .patientId(patient.getId())
                 .dentistId(dentist.getId())
                 .startTime(request.startTime())
+                .durationMinutes(request.duration())
                 .notes(request.notes())
                 .createdById(actor != null ? actor.getId() : null)
                 .createdByName(actor != null ? actor.getName() : null)
@@ -70,7 +71,7 @@ public class AppointmentService {
         AppUser dentist = userRepository.findById(request.dentistId())
                 .orElseThrow(() -> new NotFoundException("Dentista não encontrado."));
 
-        LocalDateTime end = request.startTime().plusMinutes(30);
+        LocalDateTime end = request.startTime().plusMinutes(request.duration());
         if (repository.existsConflict(request.dentistId(), request.startTime(), end, id)) {
             throw new ConflictException("Já existe um agendamento neste horário para o dentista selecionado.");
         }
@@ -79,6 +80,7 @@ public class AppointmentService {
         appointment.setPatientId(patient.getId());
         appointment.setDentistId(dentist.getId());
         appointment.setStartTime(request.startTime());
+        appointment.setDurationMinutes(request.duration());
         appointment.setNotes(request.notes());
         appointment.setUpdatedById(actor != null ? actor.getId() : null);
         appointment.setUpdatedByName(actor != null ? actor.getName() : null);
@@ -113,9 +115,11 @@ public class AppointmentService {
                 dentist != null ? dentist.getName() : "");
     }
 
-    public List<AppointmentResponse> findByDentistAndPeriod(UUID dentistId, LocalDateTime from, LocalDateTime to) {
-        return repository.findByDentistIdAndStartTimeBetweenOrderByStartTime(dentistId, from, to)
-                .stream()
+    public List<AppointmentResponse> findByPeriod(UUID dentistId, LocalDateTime from, LocalDateTime to) {
+        List<Appointment> list = dentistId != null
+                ? repository.findByDentistIdAndStartTimeBetweenOrderByStartTime(dentistId, from, to)
+                : repository.findByStartTimeBetweenOrderByStartTime(from, to);
+        return list.stream()
                 .map(a -> {
                     Patient patient = patientRepository.findByIdAndDeletedAtIsNull(a.getPatientId()).orElse(null);
                     AppUser dentist = userRepository.findById(a.getDentistId()).orElse(null);

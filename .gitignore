@@ -19,3 +19,6 @@ backend/*.jar
 
 # Arquivos de documentação/prototipagem (não rastrear HTMLs de poc na pasta docs)
 docs/*.html
+
+# Docker Compose — variáveis de substituição (mesmo conteúdo que backend/.env)
+.env

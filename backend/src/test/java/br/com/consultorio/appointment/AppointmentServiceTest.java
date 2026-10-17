@@ -75,7 +75,7 @@ class AppointmentServiceTest {
     // ── helpers ───────────────────────────────────────────────────────────────
 
     private AppointmentRequest requestValido(LocalDateTime inicio) {
-        return new AppointmentRequest(patientId, dentistId, inicio, "Revisão");
+        return new AppointmentRequest(patientId, dentistId, inicio, 30, "Revisão");
     }
 
     private Appointment agendamentoSalvo(UUID id, LocalDateTime inicio, Appointment.Status status) {
@@ -235,10 +235,10 @@ class AppointmentServiceTest {
                 .hasMessageContaining("REALIZADO");
     }
 
-    // ── findByDentistAndPeriod ────────────────────────────────────────────────
+    // ── findByPeriod ──────────────────────────────────────────────────────────
 
     @Test
-    void findByDentistAndPeriodDeveRetornarListaOrdenada() {
+    void findByPeriodComDentistaDeveRetornarListaOrdenada() {
         LocalDateTime inicio = LocalDateTime.now().withHour(0).withMinute(0);
         LocalDateTime fim    = inicio.plusDays(7);
         Appointment a = agendamentoSalvo(appointmentId, inicio.plusHours(9), Appointment.Status.AGENDADO);
@@ -250,9 +250,27 @@ class AppointmentServiceTest {
         when(userRepository.findById(dentistId))
                 .thenReturn(Optional.of(dentista(dentistId)));
 
-        List<AppointmentResponse> result = service.findByDentistAndPeriod(dentistId, inicio, fim);
+        List<AppointmentResponse> result = service.findByPeriod(dentistId, inicio, fim);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).dentistName()).isEqualTo("Dr. Valdomiro");
+    }
+
+    @Test
+    void findByPeriodSemDentistaDeveRetornarTodos() {
+        LocalDateTime inicio = LocalDateTime.now().withHour(0).withMinute(0);
+        LocalDateTime fim    = inicio.plusDays(7);
+        Appointment a = agendamentoSalvo(appointmentId, inicio.plusHours(9), Appointment.Status.AGENDADO);
+
+        when(repository.findByStartTimeBetweenOrderByStartTime(inicio, fim))
+                .thenReturn(List.of(a));
+        when(patientRepository.findByIdAndDeletedAtIsNull(patientId))
+                .thenReturn(Optional.of(paciente(patientId)));
+        when(userRepository.findById(dentistId))
+                .thenReturn(Optional.of(dentista(dentistId)));
+
+        List<AppointmentResponse> result = service.findByPeriod(null, inicio, fim);
+
+        assertThat(result).hasSize(1);
     }
 }
