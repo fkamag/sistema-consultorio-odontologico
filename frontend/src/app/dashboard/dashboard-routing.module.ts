@@ -18,6 +18,10 @@ const routes: Routes = [
         loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule)
       },
       {
+        path: 'agenda',
+        loadChildren: () => import('./agenda/agenda.module').then(m => m.AgendaModule)
+      },
+      {
         path: 'auditoria',
         loadChildren: () => import('./auditoria/auditoria.module').then(m => m.AuditoriaModule)
       }
