@@ -121,16 +121,47 @@ A aplicação ficará disponível em `http://localhost:4200`.
 
 ---
 
-### 4. Ambiente completo via Docker (opcional)
+### 4. Ambiente completo via Docker Compose (recomendado)
 
-Para rodar backend + banco juntos em container:
+Para rodar banco + API + frontend juntos em containers, a partir da **raiz** do projeto:
+
+#### 4.1 Configurar variáveis de ambiente
+
+O Docker Compose lê o arquivo `.env` da raiz do projeto para substituição de variáveis. Crie-o copiando o exemplo do backend:
 
 ```bash
-cd backend
-docker compose up --build
+cp backend/.env.example .env
 ```
 
-A API ficará disponível na porta definida em `API_PORT` no `.env` (padrão: `8086`).
+Edite o `.env` com suas configurações (banco, JWT secret, portas).
+
+#### 4.2 Subir todos os serviços
+
+```bash
+docker compose up -d --build
+```
+
+| Serviço | URL |
+|---|---|
+| Frontend (Angular) | `http://localhost:4200` |
+| API REST | `http://localhost:8080` |
+| PostgreSQL | `localhost:5441` |
+
+> Na primeira execução o build pode levar alguns minutos (download de imagens + compilação).
+
+#### 4.3 Ver logs
+
+```bash
+docker compose logs -f api       # logs da API
+docker compose logs -f frontend  # logs do Nginx
+```
+
+#### 4.4 Parar os serviços
+
+```bash
+docker compose down        # mantém o volume do banco
+docker compose down -v     # remove também os dados do banco
+```
 
 ---
 
@@ -218,10 +249,14 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 
 ### Agenda
 
-- [ ] Modelo de dados para agendamentos
-- [ ] CRUD de agendamentos (backend)
-- [ ] Tela de agenda com visualização semanal/diária
-- [ ] Confirmação e cancelamento de consultas
+- [x] Modelo de dados para agendamentos (`appointments`)
+- [x] CRUD de agendamentos com validação de conflito de horário (backend, TDD)
+- [x] Suporte a duração variável por procedimento (conflito proporcional à duração)
+- [x] Filtro por dentista opcional (todos ou individual)
+- [x] Tela de agenda: mini-calendário mensal + lista de consultas do dia
+- [x] Formulário com autocomplete de paciente, tipo de procedimento e duração
+- [x] Alteração de status (Agendado → Confirmado → Realizado / Cancelado)
+- [x] Testes unitários do AppointmentService (48 testes passando)
 
 ### Prontuário
 
