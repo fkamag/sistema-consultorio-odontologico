@@ -1,0 +1,105 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ modoEdicao ? 'Editar Agendamento' : 'Nova Consulta' }}</h2>
+      <button class="modal-close" (click)="fechar()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="salvar()">
+
+      <!-- Paciente: autocomplete -->
+      <div class="field">
+        <label class="field-label">Paciente <span class="req">*</span></label>
+        <div class="autocomplete-wrap">
+          <input
+            class="field-input"
+            type="text"
+            [value]="buscaPaciente"
+            (input)="buscaPaciente = $any($event.target).value; onBuscaInput()"
+            (blur)="onBuscaBlur()"
+            placeholder="Digite o nome do paciente…"
+            autocomplete="off"
+          />
+          <button
+            *ngIf="pacienteSelecionado"
+            type="button"
+            class="clear-btn"
+            (click)="limparPaciente()"
+            title="Limpar"
+          >&times;</button>
+          <ul class="autocomplete-list" *ngIf="sugestoesVisiveis">
+            <li
+              *ngFor="let p of pacienteSugestoes"
+              (mousedown)="selecionarPaciente(p)"
+            >
+              <span class="sug-nome">{{ p.name }}</span>
+              <span class="sug-tel">{{ p.phone || '—' }}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="paciente-telefone" *ngIf="pacienteSelecionado">
+          Telefone: <strong>{{ telefonePaciente }}</strong>
+        </div>
+        <span class="field-error" *ngIf="form.get('patientId')?.invalid && form.get('patientId')?.touched">
+          Paciente é obrigatório.
+        </span>
+      </div>
+
+      <!-- Dentista -->
+      <div class="field">
+        <label class="field-label">Dentista <span class="req">*</span></label>
+        <select class="field-input" formControlName="dentistId">
+          <option value="">Selecione o dentista…</option>
+          <option *ngFor="let d of dentistas" [value]="d.id">{{ d.name }}</option>
+        </select>
+        <span class="field-error" *ngIf="form.get('dentistId')?.invalid && form.get('dentistId')?.touched">
+          Dentista é obrigatório.
+        </span>
+      </div>
+
+      <!-- Tipo de procedimento + duração -->
+      <div class="field-row">
+        <div class="field" style="flex: 2">
+          <label class="field-label">Tipo de procedimento</label>
+          <select class="field-input" [value]="procedimentoAtual" (change)="onProcedimentoChange($event)">
+            <option *ngFor="let p of procedimentos" [value]="p.label">
+              {{ p.label }} ({{ p.minutos }} min)
+            </option>
+          </select>
+        </div>
+        <div class="field" style="flex: 1">
+          <label class="field-label">Duração (min) <span class="req">*</span></label>
+          <input class="field-input" type="number" formControlName="durationMinutes" min="10" max="480" step="5">
+          <span class="field-error" *ngIf="form.get('durationMinutes')?.invalid && form.get('durationMinutes')?.touched">
+            Entre 10 e 480 min.
+          </span>
+        </div>
+      </div>
+
+      <!-- Data e hora -->
+      <div class="field">
+        <label class="field-label">Data e Hora <span class="req">*</span></label>
+        <input class="field-input" type="datetime-local" formControlName="startTime" step="1800">
+        <span class="field-error" *ngIf="form.get('startTime')?.invalid && form.get('startTime')?.touched">
+          Data e hora são obrigatórios.
+        </span>
+      </div>
+
+      <!-- Observações -->
+      <div class="field">
+        <label class="field-label">Observações</label>
+        <textarea class="field-input field-textarea" formControlName="notes" rows="3"
+          placeholder="Procedimento, observações…"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="fechar()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="salvando">
+          {{ salvando ? 'Salvando…' : (modoEdicao ? 'Salvar alterações' : 'Agendar') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
