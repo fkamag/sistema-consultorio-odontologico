@@ -6,11 +6,13 @@ import { SharedModule } from '../../shared/shared.module';
 import { PacientesRoutingModule } from './pacientes-routing.module';
 import { ListaComponent } from './lista/lista.component';
 import { FormularioComponent } from './formulario/formulario.component';
+import { DetalheComponent } from './detalhe/detalhe.component';
 
 @NgModule({
   declarations: [
     ListaComponent,
-    FormularioComponent
+    FormularioComponent,
+    DetalheComponent,
   ],
   imports: [
     CommonModule,
