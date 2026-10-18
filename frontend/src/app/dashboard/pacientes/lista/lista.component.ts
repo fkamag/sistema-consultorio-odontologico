@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { Paciente, PageResponse } from '../models/paciente.models';
 import { PacienteService } from '../services/paciente.service';
@@ -25,7 +26,8 @@ export class ListaComponent implements OnInit {
 
   constructor(
     private pacienteService: PacienteService,
-    private toast: ToastService
+    private toast: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -93,6 +95,10 @@ export class ListaComponent implements OnInit {
     this.pageSize = size;
     this.page = 0;
     this.load();
+  }
+
+  abrirProntuario(id: string): void {
+    this.router.navigate(['/dashboard/pacientes', id]);
   }
 
   proximaPagina(): void { this.page++; this.load(); }
