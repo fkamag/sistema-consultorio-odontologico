@@ -1,0 +1,273 @@
+<div class="detalhe-page" *ngIf="paciente">
+
+  <!-- Cabeçalho do paciente -->
+  <div class="patient-header">
+    <button class="back-btn" (click)="voltar()">← Pacientes</button>
+    <div class="patient-info">
+      <div class="patient-avatar">{{ paciente.name.charAt(0).toUpperCase() }}</div>
+      <div>
+        <h1 class="patient-name">{{ paciente.name }}</h1>
+        <div class="patient-meta-row">
+          <span *ngIf="paciente.cpf" class="meta-item mono">CPF: {{ paciente.cpf }}</span>
+          <span *ngIf="paciente.phone" class="meta-item">{{ paciente.phone }}</span>
+          <span *ngIf="paciente.birthDate" class="meta-item">Nasc: {{ formatDate(paciente.birthDate) }}</span>
+          <span *ngIf="paciente.email" class="meta-item">{{ paciente.email }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abas -->
+  <div class="tab-nav">
+    <button class="tab" [class.active]="abaAtiva === 'anamnese'"  (click)="mudarAba('anamnese')">Anamnese</button>
+    <button class="tab" [class.active]="abaAtiva === 'evolucao'"  (click)="mudarAba('evolucao')">Evolução Clínica</button>
+    <button class="tab" [class.active]="abaAtiva === 'plano'"     (click)="mudarAba('plano')">Plano de Tratamento</button>
+  </div>
+
+  <div class="tab-body">
+
+    <!-- ── Anamnese ── -->
+    <div *ngIf="abaAtiva === 'anamnese'">
+      <div class="tab-actions">
+        <button class="btn" (click)="abrirModalAnamnese()">+ Nova versão da anamnese</button>
+      </div>
+
+      <div *ngIf="loading" class="empty-state">Carregando…</div>
+
+      <div *ngIf="!loading && anamneses.length === 0" class="empty-state">
+        <strong>Sem anamnese registrada</strong>
+        Registre a primeira versão da anamnese deste paciente.
+      </div>
+
+      <div *ngFor="let a of anamneses" class="card">
+        <div class="card-head">
+          <span class="badge badge-gray">v{{ a.versionNumber }}</span>
+          <span class="card-date">{{ formatDateTime(a.createdAt) }}</span>
+          <span class="card-author" *ngIf="a.createdByName">por {{ a.createdByName }}</span>
+        </div>
+        <div class="anamnese-grid">
+          <div class="anamnese-field" *ngIf="a.alergias">
+            <span class="field-label">Alergias</span>
+            <span class="field-value">{{ a.alergias }}</span>
+          </div>
+          <div class="anamnese-field" *ngIf="a.medicamentos">
+            <span class="field-label">Medicamentos</span>
+            <span class="field-value">{{ a.medicamentos }}</span>
+          </div>
+          <div class="anamnese-flags">
+            <span class="flag" [class.flag-on]="a.diabetes">Diabetes</span>
+            <span class="flag" [class.flag-on]="a.hipertensao">Hipertensão</span>
+            <span class="flag" [class.flag-on]="a.problemasCardiacos">Prob. Cardíacos</span>
+          </div>
+          <div class="anamnese-field" *ngIf="a.tratamentosMedicos">
+            <span class="field-label">Tratamentos médicos</span>
+            <span class="field-value">{{ a.tratamentosMedicos }}</span>
+          </div>
+          <div class="anamnese-field" *ngIf="a.cirurgias">
+            <span class="field-label">Cirurgias</span>
+            <span class="field-value">{{ a.cirurgias }}</span>
+          </div>
+          <div class="anamnese-field" *ngIf="a.observacoes">
+            <span class="field-label">Observações</span>
+            <span class="field-value">{{ a.observacoes }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Evolução Clínica ── -->
+    <div *ngIf="abaAtiva === 'evolucao'">
+      <div class="tab-actions">
+        <button class="btn" (click)="abrirModalNota()">+ Nova evolução</button>
+      </div>
+
+      <div *ngIf="loading" class="empty-state">Carregando…</div>
+
+      <div *ngIf="!loading && notas.length === 0" class="empty-state">
+        <strong>Nenhuma evolução registrada</strong>
+        Registre a primeira evolução clínica deste paciente.
+      </div>
+
+      <div *ngFor="let n of notas" class="card note-card">
+        <div class="card-head">
+          <span class="badge badge-blue">{{ noteTypeLabels[n.noteType] }}</span>
+          <span class="card-date">{{ formatDate(n.noteDate) }}</span>
+          <span class="card-tooth" *ngIf="n.tooth">Dente {{ n.tooth }}</span>
+          <span class="card-author" *ngIf="n.dentistName">{{ n.dentistName }}</span>
+          <button class="icon-btn danger" (click)="excluirNota(n)">Remover</button>
+        </div>
+        <p class="note-desc">{{ n.description }}</p>
+      </div>
+    </div>
+
+    <!-- ── Plano de Tratamento ── -->
+    <div *ngIf="abaAtiva === 'plano'">
+      <div class="tab-actions">
+        <button class="btn" (click)="abrirModalPlano()">+ Adicionar ao plano</button>
+      </div>
+
+      <div *ngIf="loading" class="empty-state">Carregando…</div>
+
+      <div *ngIf="!loading && plano.length === 0" class="empty-state">
+        <strong>Nenhum procedimento planejado</strong>
+        Adicione o primeiro item do plano de tratamento.
+      </div>
+
+      <div class="plan-table-wrap" *ngIf="plano.length > 0">
+        <table class="plan-table">
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Dente</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of plano">
+              <td>{{ item.description }}</td>
+              <td class="mono">{{ item.tooth || '—' }}</td>
+              <td class="mono">{{ formatBRL(item.valueEstimated) }}</td>
+              <td>
+                <select
+                  class="status-select"
+                  [value]="item.status"
+                  (change)="alterarStatus(item, $any($event.target).value)"
+                  [ngClass]="statusClass(item.status)"
+                >
+                  <option *ngFor="let s of planStatuses" [value]="s">{{ planStatusLabels[s] }}</option>
+                </select>
+              </td>
+              <td class="td-action">
+                <button class="icon-btn danger" (click)="excluirItemPlano(item)">Remover</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="!paciente" class="empty-state">Carregando paciente…</div>
+
+<!-- Modal Anamnese -->
+<div class="modal-backdrop" *ngIf="modalAnamnese" (click)="modalAnamnese = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h2>Nova versão da anamnese</h2>
+      <button class="close-btn" (click)="modalAnamnese = false">✕</button>
+    </div>
+    <form [formGroup]="anamneseForm" (ngSubmit)="salvarAnamnese()" class="modal-form">
+      <div class="field">
+        <label>Alergias</label>
+        <textarea formControlName="alergias" rows="2"></textarea>
+      </div>
+      <div class="field">
+        <label>Medicamentos em uso</label>
+        <textarea formControlName="medicamentos" rows="2"></textarea>
+      </div>
+      <div class="checkbox-row">
+        <label class="check-label">
+          <input type="checkbox" formControlName="diabetes"> Diabetes
+        </label>
+        <label class="check-label">
+          <input type="checkbox" formControlName="hipertensao"> Hipertensão
+        </label>
+        <label class="check-label">
+          <input type="checkbox" formControlName="problemasCardiacos"> Problemas cardíacos
+        </label>
+      </div>
+      <div class="field">
+        <label>Tratamentos médicos em curso</label>
+        <textarea formControlName="tratamentosMedicos" rows="2"></textarea>
+      </div>
+      <div class="field">
+        <label>Cirurgias anteriores</label>
+        <textarea formControlName="cirurgias" rows="2"></textarea>
+      </div>
+      <div class="field">
+        <label>Observações</label>
+        <textarea formControlName="observacoes" rows="2"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn quiet" (click)="modalAnamnese = false">Cancelar</button>
+        <button type="submit" class="btn" [disabled]="salvandoAnamnese">
+          {{ salvandoAnamnese ? 'Salvando…' : 'Registrar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Evolução -->
+<div class="modal-backdrop" *ngIf="modalNota" (click)="modalNota = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h2>Nova evolução clínica</h2>
+      <button class="close-btn" (click)="modalNota = false">✕</button>
+    </div>
+    <form [formGroup]="notaForm" (ngSubmit)="salvarNota()" class="modal-form">
+      <div class="field-row">
+        <div class="field">
+          <label>Data</label>
+          <input type="date" formControlName="noteDate">
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select formControlName="noteType">
+            <option *ngFor="let t of noteTypes" [value]="t">{{ noteTypeLabels[t] }}</option>
+          </select>
+        </div>
+        <div class="field field-sm">
+          <label>Dente</label>
+          <input type="text" formControlName="tooth" placeholder="ex: 26">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descrição <span class="req">*</span></label>
+        <textarea formControlName="description" rows="3" placeholder="Descreva o procedimento realizado…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn quiet" (click)="modalNota = false">Cancelar</button>
+        <button type="submit" class="btn" [disabled]="notaForm.invalid || salvandoNota">
+          {{ salvandoNota ? 'Salvando…' : 'Registrar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Plano -->
+<div class="modal-backdrop" *ngIf="modalPlano" (click)="modalPlano = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h2>Adicionar ao plano de tratamento</h2>
+      <button class="close-btn" (click)="modalPlano = false">✕</button>
+    </div>
+    <form [formGroup]="planoForm" (ngSubmit)="salvarPlano()" class="modal-form">
+      <div class="field">
+        <label>Descrição do procedimento <span class="req">*</span></label>
+        <input type="text" formControlName="description" placeholder="ex: Restauração dente 26">
+      </div>
+      <div class="field-row">
+        <div class="field field-sm">
+          <label>Dente</label>
+          <input type="text" formControlName="tooth" placeholder="ex: 26">
+        </div>
+        <div class="field">
+          <label>Valor estimado (R$)</label>
+          <input type="number" formControlName="valueEstimated" min="0" step="0.01" placeholder="0,00">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn quiet" (click)="modalPlano = false">Cancelar</button>
+        <button type="submit" class="btn" [disabled]="planoForm.invalid || salvandoPlano">
+          {{ salvandoPlano ? 'Salvando…' : 'Adicionar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

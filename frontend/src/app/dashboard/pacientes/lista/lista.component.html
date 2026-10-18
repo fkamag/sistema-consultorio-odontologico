@@ -44,6 +44,7 @@
         <td>{{ formatDate(p.birthDate) }}</td>
         <td class="td-action">
           <button class="icon-btn" (click)="abrirEditar(p.id); $event.stopPropagation()">Editar</button>
+          <button class="icon-btn" (click)="abrirProntuario(p.id); $event.stopPropagation()">Prontuário</button>
         </td>
       </tr>
     </tbody>
