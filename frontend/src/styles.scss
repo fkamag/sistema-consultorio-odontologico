@@ -22,6 +22,43 @@
   --radius: 4px;
 }
 
+// ── Dark mode (segue preferência do SO, igual à PoC) ─────────────────────────
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg:        #12211C;
+    --color-surface:   #1A2C26;
+    --color-ink:       #ECE8DE;
+    --color-ink-soft:  #A6B6AE;
+    --color-line:      #2E443C;
+    --color-teal:      #55B69B;
+    --color-teal-soft: #1F3830;
+    --color-teal-hover:#4AA389;
+    --color-rust:      #E0916B;
+    --color-rust-soft: #3A2A20;
+    --color-gold:      #D2B65E;
+    --color-gold-soft: #35301B;
+    --color-blue:      #7FAFC9;
+    --color-blue-soft: #22333D;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg:        #12211C;
+  --color-surface:   #1A2C26;
+  --color-ink:       #ECE8DE;
+  --color-ink-soft:  #A6B6AE;
+  --color-line:      #2E443C;
+  --color-teal:      #55B69B;
+  --color-teal-soft: #1F3830;
+  --color-teal-hover:#4AA389;
+  --color-rust:      #E0916B;
+  --color-rust-soft: #3A2A20;
+  --color-gold:      #D2B65E;
+  --color-gold-soft: #35301B;
+  --color-blue:      #7FAFC9;
+  --color-blue-soft: #22333D;
+}
+
 // ── Base ──────────────────────────────────────────────────────────────────────
 * { box-sizing: border-box; }
 
