@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record PatientRequest(
 
@@ -42,5 +43,10 @@ public record PatientRequest(
         @Size(max = 2)
         String state,
 
-        String notes
+        String notes,
+
+        @Size(max = 150)
+        String convenio,
+
+        UUID responsibleDentistId
 ) {}

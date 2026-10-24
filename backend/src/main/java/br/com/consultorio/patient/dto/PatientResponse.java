@@ -24,7 +24,11 @@ public record PatientResponse(
         LocalDateTime createdAt,
         String createdByName,
         LocalDateTime updatedAt,
-        String updatedByName
+        String updatedByName,
+        String convenio,
+        UUID responsibleDentistId,
+        String responsibleDentistName,
+        LocalDate lastVisit
 ) {
     public static PatientResponse from(Patient p) {
         return new PatientResponse(
@@ -45,7 +49,38 @@ public record PatientResponse(
                 p.getCreatedAt(),
                 p.getCreatedByName(),
                 p.getUpdatedAt(),
-                p.getUpdatedByName()
+                p.getUpdatedByName(),
+                p.getConvenio(),
+                p.getResponsibleDentistId(),
+                p.getResponsibleDentistName(),
+                null
+        );
+    }
+
+    public static PatientResponse from(Patient p, LocalDate lastVisit) {
+        return new PatientResponse(
+                p.getId(),
+                p.getName(),
+                p.getCpf(),
+                p.getBirthDate(),
+                p.getPhone(),
+                p.getEmail(),
+                p.getStreet(),
+                p.getNumber(),
+                p.getComplement(),
+                p.getNeighborhood(),
+                p.getCity(),
+                p.getState(),
+                p.getNotes(),
+                p.isActive(),
+                p.getCreatedAt(),
+                p.getCreatedByName(),
+                p.getUpdatedAt(),
+                p.getUpdatedByName(),
+                p.getConvenio(),
+                p.getResponsibleDentistId(),
+                p.getResponsibleDentistName(),
+                lastVisit
         );
     }
 }

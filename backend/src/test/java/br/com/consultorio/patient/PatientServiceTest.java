@@ -68,7 +68,8 @@ class PatientServiceTest {
         return new PatientRequest(
                 "João da Silva", "123.456.789-09", LocalDate.of(1990, 5, 20),
                 "(11) 98765-4321", "joao@email.com",
-                "Rua das Flores", "100", "Apto 2", "Centro", "São Paulo", "SP", null
+                "Rua das Flores", "100", "Apto 2", "Centro", "São Paulo", "SP", null,
+                null, null
         );
     }
 
