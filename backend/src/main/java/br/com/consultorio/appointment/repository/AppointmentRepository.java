@@ -19,6 +19,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     List<Appointment> findByPatientIdOrderByStartTimeDesc(UUID patientId);
 
+    long countByStartTimeBetween(LocalDateTime from, LocalDateTime to);
+
+    long countByStartTimeBetweenAndStatus(LocalDateTime from, LocalDateTime to, Appointment.Status status);
+
     @Query("""
             SELECT COUNT(a) > 0 FROM Appointment a
             WHERE a.dentistId = :dentistId
