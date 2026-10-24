@@ -12,6 +12,10 @@ export interface Paciente {
   city: string | null;
   state: string | null;
   notes: string | null;
+  convenio: string | null;
+  responsibleDentistId: string | null;
+  responsibleDentistName: string | null;
+  lastVisit: string | null;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -30,6 +34,8 @@ export interface PacienteRequest {
   city: string | null;
   state: string | null;
   notes: string | null;
+  convenio: string | null;
+  responsibleDentistId: string | null;
 }
 
 export interface PageResponse<T> {

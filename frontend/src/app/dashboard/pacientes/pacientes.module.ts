@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { SharedModule } from '../../shared/shared.module';
 import { PacientesRoutingModule } from './pacientes-routing.module';
@@ -17,6 +17,7 @@ import { DetalheComponent } from './detalhe/detalhe.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     SharedModule,
     PacientesRoutingModule
   ]
