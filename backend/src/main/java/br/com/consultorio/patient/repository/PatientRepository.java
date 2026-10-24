@@ -28,4 +28,6 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
     boolean existsByCpfAndDeletedAtIsNull(String cpf);
 
     boolean existsByCpfAndIdNotAndDeletedAtIsNull(String cpf, UUID id);
+
+    long countByDeletedAtIsNull();
 }

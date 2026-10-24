@@ -1,29 +1,63 @@
 <div class="page-head">
   <h1>Dashboard</h1>
+  <p class="page-sub">Visão geral do consultório — hoje</p>
 </div>
 
-<p class="page-sub">Visão geral do consultório</p>
+<div *ngIf="loading" class="loading-state">Carregando…</div>
 
-<div class="stat-grid">
-  <div class="stat-card">
-    <div class="stat-num">—</div>
-    <div class="stat-label">Consultas hoje</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">—</div>
-    <div class="stat-label">Pacientes ativos</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">—</div>
-    <div class="stat-label">Pendências</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-num">—</div>
-    <div class="stat-label">Orçamentos em aberto</div>
-  </div>
+<div *ngIf="erro" class="empty-state">
+  <strong>Não foi possível carregar o resumo</strong>
+  Verifique a conexão com o servidor.
 </div>
 
-<div class="empty-state">
-  <strong>Em construção</strong>
-  Os módulos de atendimento serão integrados nas próximas etapas.
-</div>
+<ng-container *ngIf="summary">
+
+  <!-- Stats -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-num">{{ summary.consultasHoje }}</div>
+      <div class="stat-label">Consultas hoje</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ summary.confirmadosHoje }}</div>
+      <div class="stat-label">Confirmadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ summary.canceladasHoje }}</div>
+      <div class="stat-label">Canceladas hoje</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ summary.pacientesAtivos }}</div>
+      <div class="stat-label">Pacientes ativos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ summary.orcamentosEmAberto }}</div>
+      <div class="stat-label">Orçamentos em aberto</div>
+    </div>
+  </div>
+
+  <!-- Consultas do dia -->
+  <div class="section-head">
+    <h2 class="section-title">Consultas de hoje</h2>
+    <button class="btn secondary small" (click)="irParaAgenda()">Ver agenda →</button>
+  </div>
+
+  <div *ngIf="summary.proximasConsultasHoje.length === 0" class="empty-state">
+    <strong>Nenhuma consulta agendada para hoje</strong>
+  </div>
+
+  <div *ngFor="let c of summary.proximasConsultasHoje" class="appt-card">
+    <div class="appt-hora">{{ formatHora(c.startTime) }}</div>
+    <div class="appt-body">
+      <div class="appt-paciente">
+        <a class="appt-link" (click)="irParaPaciente(c.patientId)">{{ c.patientName }}</a>
+        <span class="badge" [ngClass]="statusClass(c.status)">{{ statusLabel(c.status) }}</span>
+      </div>
+      <div class="appt-meta">
+        {{ c.dentistName }} · {{ c.durationMinutes }} min
+        <span *ngIf="c.notes" class="appt-notes"> · {{ c.notes }}</span>
+      </div>
+    </div>
+  </div>
+
+</ng-container>
