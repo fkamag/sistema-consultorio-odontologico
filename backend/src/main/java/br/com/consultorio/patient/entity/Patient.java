@@ -55,6 +55,14 @@ public class Patient {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(length = 150)
+    private String convenio;
+
+    private UUID responsibleDentistId;
+
+    @Column(length = 150)
+    private String responsibleDentistName;
+
     @Column(nullable = false)
     @Builder.Default
     private boolean active = true;

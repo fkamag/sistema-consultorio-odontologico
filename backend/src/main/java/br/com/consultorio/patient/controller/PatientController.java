@@ -2,7 +2,9 @@ package br.com.consultorio.patient.controller;
 
 import br.com.consultorio.patient.dto.PatientRequest;
 import br.com.consultorio.patient.dto.PatientResponse;
+import br.com.consultorio.patient.dto.TimelineEvent;
 import br.com.consultorio.patient.service.PatientService;
+import br.com.consultorio.patient.service.TimelineService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +14,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/pacientes")
+@RequestMapping({"/api/patients", "/api/pacientes"})
 @RequiredArgsConstructor
 public class PatientController {
 
     private final PatientService service;
+    private final TimelineService timelineService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA','DENTISTA')")
@@ -61,6 +65,12 @@ public class PatientController {
     public ResponseEntity<Void> delete(@PathVariable UUID id, HttpServletRequest httpRequest) {
         service.delete(id, resolveIp(httpRequest));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/timeline")
+    @PreAuthorize("hasAnyRole('ADMIN','SECRETARIA','DENTISTA')")
+    public List<TimelineEvent> timeline(@PathVariable UUID id) {
+        return timelineService.timeline(id);
     }
 
     private String resolveIp(HttpServletRequest req) {

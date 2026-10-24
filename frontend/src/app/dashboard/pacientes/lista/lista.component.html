@@ -25,7 +25,7 @@
         <th>Nome</th>
         <th>CPF</th>
         <th>Telefone</th>
-        <th>Nascimento</th>
+        <th>Última visita</th>
         <th></th>
       </tr>
     </thead>
@@ -41,9 +41,8 @@
         </td>
         <td class="mono">{{ p.cpf }}</td>
         <td>{{ p.phone || '—' }}</td>
-        <td>{{ formatDate(p.birthDate) }}</td>
+        <td>{{ formatDate(p.lastVisit) }}</td>
         <td class="td-action">
-          <button class="icon-btn" (click)="abrirEditar(p.id); $event.stopPropagation()">Editar</button>
           <button class="icon-btn" (click)="abrirProntuario(p.id); $event.stopPropagation()">Prontuário</button>
         </td>
       </tr>
