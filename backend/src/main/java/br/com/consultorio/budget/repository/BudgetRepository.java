@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface BudgetRepository extends JpaRepository<Budget, UUID> {
     List<Budget> findByPatientIdOrderByCreatedAtDesc(UUID patientId);
     Optional<Budget> findByIdAndPatientId(UUID id, UUID patientId);
+    long countByStatusIn(List<Budget.BudgetStatus> statuses);
 }
