@@ -1,66 +1,106 @@
-.login-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+// Exatamente o mesmo gradiente e posicionamento da PoC
+.login-page {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
-  background-color: var(--color-bg, #F7F5F1);
+  padding: 40px 20px 60px;
+  background: linear-gradient(160deg, var(--color-bg) 0%, var(--color-bg) 45%, var(--color-teal-soft) 100%);
 }
 
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  padding: 32px 28px 24px;
-  border: 1px solid var(--color-line, #DBD5C9);
-  border-radius: var(--radius, 4px);
-  box-shadow: 0 1px 4px rgba(31, 43, 41, 0.06);
+.login-decor {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.1;
+
+  svg { display: block; height: auto; }
 }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 28px;
+.login-decor-1 {
+  bottom: -70px;
+  right: -60px;
+  width: 340px;
+  transform: rotate(-8deg);
+
+  svg { width: 340px; }
 }
 
-.login-title {
-  font-family: var(--font-serif, 'IBM Plex Serif', Georgia, serif);
-  font-size: 1.35rem;
+.login-decor-2 {
+  top: -90px;
+  left: -70px;
+  width: 260px;
+  transform: rotate(18deg);
+  opacity: 0.07;
+
+  svg { width: 260px; }
+}
+
+.login-inner {
+  max-width: 380px;
+  margin: 60px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+// Brand idêntica à PoC
+.brand {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-teal, #0F6B5C);
-  margin: 0 0 4px;
-}
-
-.login-subtitle {
-  font-size: 0.82rem;
-  color: var(--color-ink-soft, #5B6864);
-  margin: 0;
-}
-
-.full-width {
-  width: 100%;
-}
-
-.login-btn {
-  margin-top: 4px;
-  height: 44px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  background-color: var(--color-teal, #0F6B5C) !important;
+  color: var(--color-teal);
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
   gap: 8px;
+  margin-bottom: 22px;
 
-  &:hover:not([disabled]) {
-    background-color: var(--color-teal-hover, #0C5A4D) !important;
+  .sub {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    color: var(--color-ink-soft);
+    letter-spacing: 0.02em;
   }
 }
 
-.login-error {
-  display: block;
-  color: var(--color-rust, #B5502E);
-  font-size: 0.82rem;
-  margin-bottom: 10px;
-  padding: 8px 10px;
-  background: #F3E3DC;
-  border-radius: var(--radius, 4px);
+// Modal com largura máxima de 100% (igual à PoC: style="max-width:100%")
+.modal {
+  max-width: 100%;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  h2 { margin-bottom: 16px; }
+}
+
+// Password wrap idêntico à PoC
+.password-wrap {
+  position: relative;
+
+  input { width: 100%; padding-right: 36px; }
+}
+
+.password-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 5px;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  display: flex;
+  border-radius: var(--radius);
+
+  svg { width: 17px; height: 17px; }
+
+  &:hover { color: var(--color-teal); }
+}
+
+.btn { width: 100%; justify-content: center; }
+
+@media (max-width: 760px) {
+  .login-page { min-height: 100vh; }
 }

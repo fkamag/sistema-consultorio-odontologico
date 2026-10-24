@@ -43,7 +43,7 @@
 
 // ── Abas ─────────────────────────────────────────────────────────────────────
 
-.tab-nav {
+.tab-nav, .tabs {
   display: flex;
   gap: 4px;
   border-bottom: 1px solid var(--color-line);
@@ -291,4 +291,307 @@
 @media (max-width: 760px) {
   .modal-backdrop { padding: 0; align-items: stretch; }
   .modal { max-width: 100%; border-radius: 0; min-height: 100%; }
+}
+
+// ── Cabeçalho do paciente ─────────────────────────────────────────────────
+
+.patient-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+}
+
+.patient-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.83rem;
+  color: var(--color-ink-soft);
+}
+
+// ── Odontograma ───────────────────────────────────────────────────────────
+
+.odontogram-wrap { overflow-x: auto; padding: 10px 0 4px; }
+
+.arch-label {
+  font-size: 0.72rem;
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+  margin: 14px 0 4px;
+  text-align: center;
+}
+
+.arch-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+}
+
+.tooth-face-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0 2px 8px;
+}
+
+.tooth-face-num {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+
+  &:hover { color: var(--color-teal); }
+}
+
+.tooth-ausente-link {
+  background: none;
+  border: none;
+  font-size: 0.6rem;
+  color: var(--color-ink-soft);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover { color: var(--color-rust); }
+}
+
+.tooth-panel {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: 16px;
+  margin-top: 16px;
+  max-width: 460px;
+}
+
+.tooth-panel-label {
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  margin-bottom: 6px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  align-items: center;
+
+  span {
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-ink-soft);
+
+    i {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid var(--color-line);
+      background: var(--color-surface);
+      flex-shrink: 0;
+    }
+  }
+}
+
+.legend-item { } // mantido por compatibilidade
+
+.legend-pendente  { color: #D4A017 !important; i { background: #D4A017; opacity: 0.6; border-color: #D4A017; } }
+.legend-analisado { color: #9B59B6 !important; i { background: #9B59B6; opacity: 0.6; border-color: #9B59B6; } }
+.legend-tratado   { color: #27AE60 !important; i { background: #27AE60; opacity: 0.6; border-color: #27AE60; } }
+
+// ── Fotos ─────────────────────────────────────────────────────────────────
+
+.file-upload-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.photo-thumb-wrap {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+
+  &:hover .photo-delete { opacity: 1; }
+}
+
+.photo-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.photo-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.photo-caption {
+  display: block;
+  padding: 4px 6px;
+  font-size: 0.72rem;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover { background: rgba(0, 0, 0, 0.8); }
+}
+
+// ── Orçamentos ────────────────────────────────────────────────────────────
+
+.money-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  overflow: hidden;
+
+  .money-prefix {
+    padding: 0 8px;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-line);
+    line-height: 34px;
+    flex-shrink: 0;
+  }
+
+  input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    padding: 6px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    outline: none;
+    min-width: 0;
+  }
+}
+
+.orcamento-items-preview {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  margin-top: 4px;
+  white-space: pre-wrap;
+}
+
+// ── Linha do tempo ────────────────────────────────────────────────────────
+
+.timeline-entry {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-line);
+
+  &:last-child { border-bottom: none; }
+}
+
+.timeline-date {
+  flex-shrink: 0;
+  width: 82px;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  padding-top: 2px;
+}
+
+.timeline-body { flex: 1; }
+
+.timeline-type, .timeline-tipo {
+  font-size: 0.71rem;
+  font-weight: 500;
+  color: var(--color-teal);
+}
+
+.timeline-detail, .timeline-desc {
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  margin-top: 4px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.timeline-tooth-ref {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin-top: 3px;
+}
+
+.timeline-by {
+  font-size: 0.76rem;
+  color: var(--color-ink-soft);
+  font-style: italic;
+  margin-top: 3px;
 }

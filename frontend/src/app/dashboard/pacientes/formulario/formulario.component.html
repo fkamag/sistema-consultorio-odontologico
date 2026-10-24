@@ -96,6 +96,25 @@
       </div>
 
       <div class="form-section">
+        <div class="section-title">Atendimento</div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="convenio">Convênio</label>
+            <input id="convenio" class="field-input" formControlName="convenio"
+                   type="text" placeholder="Particular">
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="responsibleDentistId">Dentista responsável</label>
+            <select id="responsibleDentistId" class="field-input" formControlName="responsibleDentistId">
+              <option [value]="null">— Não definido</option>
+              <option *ngFor="let d of dentistas" [value]="d.id">{{ d.name }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
         <div class="section-title">Observações</div>
         <div class="form-row">
           <div class="form-field full">

@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PacienteService } from '../services/paciente.service';
 import { cpfValidator } from '../../../shared/validators/cpf.validator';
 import { ToastService } from '../../../shared/services/toast.service';
+import { UsuarioService } from '../../usuarios/services/usuario.service';
+import { Usuario } from '../../usuarios/models/usuario.models';
 
 @Component({
   selector: 'app-pacientes-formulario',
@@ -18,29 +20,34 @@ export class FormularioComponent implements OnInit, OnChanges {
   form!: FormGroup;
   loading = false;
   saving = false;
+  dentistas: Usuario[] = [];
 
   constructor(
     private fb: FormBuilder,
     private pacienteService: PacienteService,
+    private usuarioService: UsuarioService,
     private toast: ToastService
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name:         ['', [Validators.required, Validators.maxLength(150)]],
-      cpf:          ['', [Validators.required, cpfValidator()]],
-      birthDate:    [null],
-      phone:        ['', Validators.maxLength(20)],
-      email:        ['', [Validators.email, Validators.maxLength(150)]],
-      street:       ['', Validators.maxLength(200)],
-      number:       ['', Validators.maxLength(20)],
-      complement:   ['', Validators.maxLength(100)],
-      neighborhood: ['', Validators.maxLength(100)],
-      city:         ['', Validators.maxLength(100)],
-      state:        ['', Validators.maxLength(2)],
-      notes:        ['']
+      name:                 ['', [Validators.required, Validators.maxLength(150)]],
+      cpf:                  ['', [Validators.required, cpfValidator()]],
+      birthDate:            [null],
+      phone:                ['', Validators.maxLength(20)],
+      email:                ['', [Validators.email, Validators.maxLength(150)]],
+      street:               ['', Validators.maxLength(200)],
+      number:               ['', Validators.maxLength(20)],
+      complement:           ['', Validators.maxLength(100)],
+      neighborhood:         ['', Validators.maxLength(100)],
+      city:                 ['', Validators.maxLength(100)],
+      state:                ['', Validators.maxLength(2)],
+      notes:                [''],
+      convenio:             ['', Validators.maxLength(150)],
+      responsibleDentistId: [null],
     });
 
+    this.carregarDentistas();
     this.carregarSeEditar();
   }
 
@@ -49,6 +56,13 @@ export class FormularioComponent implements OnInit, OnChanges {
       this.form.reset();
       this.carregarSeEditar();
     }
+  }
+
+  private carregarDentistas(): void {
+    this.usuarioService.list('', 0, 100).subscribe({
+      next: res => this.dentistas = res.content.filter(u => u.role === 'DENTISTA' && u.active),
+      error: () => {}
+    });
   }
 
   private carregarSeEditar(): void {
@@ -61,7 +75,9 @@ export class FormularioComponent implements OnInit, OnChanges {
           phone: p.phone, email: p.email,
           street: p.street, number: p.number, complement: p.complement,
           neighborhood: p.neighborhood, city: p.city, state: p.state,
-          notes: p.notes
+          notes: p.notes,
+          convenio: p.convenio,
+          responsibleDentistId: p.responsibleDentistId,
         });
         this.loading = false;
       },
