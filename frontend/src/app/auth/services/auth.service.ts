@@ -11,7 +11,7 @@ const USER_KEY = 'user_session';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/auth';
+  private readonly apiUrl = '/api/auth';
   private userSubject = new BehaviorSubject<UserSession | null>(this.loadUser());
   user$ = this.userSubject.asObservable();
 

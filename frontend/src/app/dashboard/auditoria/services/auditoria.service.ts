@@ -6,7 +6,7 @@ import { AuditLog, PageResponse } from '../models/auditoria.models';
 @Injectable({ providedIn: 'root' })
 export class AuditoriaService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/auditoria';
+  private readonly apiUrl = '/api/auditoria';
 
   constructor(private http: HttpClient) {}
 
