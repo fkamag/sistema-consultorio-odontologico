@@ -29,3 +29,14 @@ export interface DiaMiniCalendario {
   selecionado: boolean;
   temAgendamento: boolean;
 }
+
+export type SlotCategoria = 'livre' | 'ocupado' | 'almoco' | 'indisponivel';
+
+export interface SlotHorario {
+  hora: string;
+  categoria: SlotCategoria;
+  label: string;
+  detalhe: string;
+  agendamentoId?: string;
+  patientId?: string;
+}
