@@ -25,9 +25,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> list(
             @RequestParam(defaultValue = "") String search,
+            @RequestParam(required = false) String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return service.list(search, page, size);
+        return service.list(search, role, page, size);
     }
 
     @GetMapping("/{id}")
