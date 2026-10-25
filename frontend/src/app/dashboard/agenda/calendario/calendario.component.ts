@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AgendaService } from '../services/agenda.service';
 import { UsuarioService } from '../../usuarios/services/usuario.service';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -36,10 +37,14 @@ export class CalendarioComponent implements OnInit {
   constructor(
     private agendaService: AgendaService,
     private usuarioService: UsuarioService,
-    private toast: ToastService
+    private toast: ToastService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    if (this.route.snapshot.data['modo'] === 'grade') {
+      this.modoVisualizacao = 'grade';
+    }
     this.montarDiasDoMes();
     this.carregar();
     this.usuarioService.list('', 0, 100).subscribe({
