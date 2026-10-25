@@ -76,9 +76,9 @@ class UserServiceTest {
     @Test
     void listDeveRetornarPaginaDeUsuarios() {
         AppUser u = usuario(UUID.randomUUID(), "Ana", "ana@consultorio.com", AppUser.Role.SECRETARIA);
-        when(repository.search(anyString(), any())).thenReturn(new PageImpl<>(List.of(u)));
+        when(repository.searchByRole(anyString(), any(), any())).thenReturn(new PageImpl<>(List.of(u)));
 
-        var resultado = service.list("Ana", 0, 10);
+        var resultado = service.list("Ana", null, 0, 10);
 
         assertThat(resultado.getContent()).hasSize(1);
         assertThat(resultado.getContent().get(0).name()).isEqualTo("Ana");
