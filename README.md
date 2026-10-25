@@ -4,14 +4,16 @@ Sistema web para gestão do consultório odontológico Dr. Valdomiro Razlosnek A
 
 ## Equipe
 
-| Integrante | Polo |
-|---|---|
-| Eliézer Paes Polsaque | — |
-| Fabio Kamagian Gomes | — |
-| Leandro Polsaque | — |
-| Cleiton Rochel Vieira | — |
+| Integrante |
+|---|
+| Alexandre Yamashita |
+| Cleiton Rochel Vieira |
+| Elder Andrei Domingues |
+| Eliézer Paes Polsaque |
+| Fabio Kamagian Gomes |
+| Leandro Polsaque |
 
-**Tutor:** Leonardo Luis Lemes — Polo Tatuí / Polo Itu
+**Tutor:** Leonardo Luis Lemes
 
 ---
 
@@ -22,8 +24,9 @@ Sistema web para gestão do consultório odontológico Dr. Valdomiro Razlosnek A
 | Frontend | Angular | 17 |
 | Backend | Java + Spring Boot | 21 / 3.3.4 |
 | Banco de Dados | PostgreSQL | 16 |
+| Armazenamento de arquivos | MinIO | latest |
 | Infraestrutura | Docker + Docker Compose | — |
-| Deploy | VPS Hostinger | — |
+| Deploy | Oracle Cloud (ARM) | — |
 
 ---
 
@@ -32,7 +35,7 @@ Sistema web para gestão do consultório odontológico Dr. Valdomiro Razlosnek A
 ```
 sistema-consultorio-odontologico/
 ├── frontend/    ← Aplicação Angular (SPA)
-├── backend/     ← API REST Spring Boot + Docker
+├── backend/     ← API REST Spring Boot
 └── docs/        ← Especificação técnica e documentação
 ```
 
@@ -58,36 +61,75 @@ cd sistema-consultorio-odontologico
 
 ---
 
-### 2. Backend
+### 2. Variáveis de ambiente
 
-#### 2.1 Configurar variáveis de ambiente
-
-Dentro da pasta `backend/`, copie o arquivo de exemplo e ajuste os valores:
+Copie o arquivo de exemplo na raiz do projeto e ajuste os valores:
 
 ```bash
-cd backend
 cp .env.example .env
 ```
 
-Edite o `.env` com suas configurações locais (banco, JWT secret, portas). O arquivo já vem com valores padrão funcionais para desenvolvimento.
+Principais variáveis:
 
-#### 2.2 Subir o banco de dados
+| Variável | Descrição | Exemplo (dev) |
+|---|---|---|
+| `POSTGRES_DB` | Nome do banco | `consultorio` |
+| `POSTGRES_USER` | Usuário do banco | `consultorio` |
+| `POSTGRES_PASSWORD` | Senha do banco | `sua-senha` |
+| `JWT_SECRET` | Chave secreta JWT (mín. 32 chars) | `chave-secreta-longa` |
+| `MINIO_ENDPOINT` | URL do MinIO | `http://localhost:9004` |
+| `MINIO_ACCESS_KEY` | Chave de acesso MinIO | `minioadmin` |
+| `MINIO_SECRET_KEY` | Chave secreta MinIO | `minioadmin` |
+| `MINIO_BUCKET` | Nome do bucket | `consultorio` |
+
+> Em produção, `MINIO_ENDPOINT` deve apontar para o serviço interno Docker: `http://minio:9000`.
+
+---
+
+### 3. Subir o ambiente completo via Docker Compose (recomendado)
 
 ```bash
-docker compose up -d db
+docker compose up -d --build
 ```
 
-O PostgreSQL ficará disponível na porta `5441` (configurável no `.env`).
+Serviços disponíveis:
 
-#### 2.3 Iniciar a API
+| Serviço | URL local |
+|---|---|
+| Frontend (Angular) | `http://localhost:4200` |
+| API REST | `http://localhost:8080` |
+| PostgreSQL | `localhost:5432` |
+| MinIO (API) | `http://localhost:9004` |
+| MinIO (Console) | `http://localhost:9005` |
+
+> Na primeira execução o build pode levar alguns minutos (download de imagens + compilação).
+
+#### Ver logs
 
 ```bash
-./mvnw spring-boot:run
+docker compose logs -f api       # logs da API
+docker compose logs -f frontend  # logs do Nginx
+docker compose logs -f minio     # logs do MinIO
 ```
 
-A API ficará disponível em `http://localhost:8080`.
+#### Parar os serviços
 
-As migrações do banco são aplicadas automaticamente pelo Flyway na inicialização.
+```bash
+docker compose down        # mantém o volume do banco
+docker compose down -v     # remove também os dados
+```
+
+---
+
+### 4. Executar o backend fora do Docker (desenvolvimento)
+
+Use o script `start-dev.sh` na raiz do projeto, que carrega o `.env` e inicia o Spring Boot:
+
+```bash
+./start-dev.sh
+```
+
+A API ficará disponível em `http://localhost:8080`. As migrações do banco são aplicadas automaticamente pelo Flyway na inicialização.
 
 #### Usuário padrão (seed)
 
@@ -102,12 +144,13 @@ As migrações do banco são aplicadas automaticamente pelo Flyway na inicializa
 #### Rodar os testes
 
 ```bash
+cd backend
 ./mvnw test
 ```
 
 ---
 
-### 3. Frontend
+### 5. Executar o frontend fora do Docker (desenvolvimento)
 
 ```bash
 cd frontend
@@ -115,53 +158,7 @@ npm install
 npm start
 ```
 
-A aplicação ficará disponível em `http://localhost:4200`.
-
-> O frontend aponta para `http://localhost:8080` por padrão. Certifique-se de que a API está rodando antes de acessar.
-
----
-
-### 4. Ambiente completo via Docker Compose (recomendado)
-
-Para rodar banco + API + frontend juntos em containers, a partir da **raiz** do projeto:
-
-#### 4.1 Configurar variáveis de ambiente
-
-O Docker Compose lê o arquivo `.env` da raiz do projeto para substituição de variáveis. Crie-o copiando o exemplo do backend:
-
-```bash
-cp backend/.env.example .env
-```
-
-Edite o `.env` com suas configurações (banco, JWT secret, portas).
-
-#### 4.2 Subir todos os serviços
-
-```bash
-docker compose up -d --build
-```
-
-| Serviço | URL |
-|---|---|
-| Frontend (Angular) | `http://localhost:4200` |
-| API REST | `http://localhost:8080` |
-| PostgreSQL | `localhost:5441` |
-
-> Na primeira execução o build pode levar alguns minutos (download de imagens + compilação).
-
-#### 4.3 Ver logs
-
-```bash
-docker compose logs -f api       # logs da API
-docker compose logs -f frontend  # logs do Nginx
-```
-
-#### 4.4 Parar os serviços
-
-```bash
-docker compose down        # mantém o volume do banco
-docker compose down -v     # remove também os dados do banco
-```
+A aplicação ficará disponível em `http://localhost:4200`. O proxy de desenvolvimento (`proxy.conf.json`) já redireciona `/api` para `http://localhost:8080`.
 
 ---
 
@@ -169,21 +166,26 @@ docker compose down -v     # remove também os dados do banco
 
 | Branch | Finalidade |
 |---|---|
-| `main` | Produção — código estável, deploy automático na VPS |
+| `main` | Produção — código estável, deploy automático na Oracle Cloud |
 | `develop` | Integração — base para todas as novas funcionalidades |
 | `feature/<nome>` | Desenvolvimento de uma funcionalidade específica |
 
 ### Regras
 
-1. **Nunca commitar direto na `main`.** Ela recebe apenas merges validados da `develop`.
+1. **Nunca commitar direto na `main` ou `develop`.** Toda mudança entra via Pull Request.
 2. Cada nova funcionalidade parte de uma branch criada a partir da `develop`:
    ```bash
    git checkout develop
    git pull
    git checkout -b feature/nome-da-funcionalidade
    ```
-3. Ao concluir, abrir PR da `feature/*` → `develop` para revisão da equipe.
-4. Após validação e testes na `develop`, abrir PR `develop` → `main` para deploy na VPS.
+3. Ao concluir, abrir PR da `feature/*` → `develop`. O CI executa testes e build automaticamente — o merge só é liberado se tudo passar.
+4. Após validação na `develop`, abrir PR `develop` → `main` para deploy em produção.
+
+### CI/CD
+
+- **Pull Requests** para `develop` e `main`: executa testes do backend (com PostgreSQL de teste) e build do frontend
+- **Merge na `main`**: faz build das imagens Docker, push no Docker Hub e deploy automático no servidor via SSH
 
 ---
 
@@ -200,6 +202,7 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [x] Estrutura inicial do projeto (monorepo, Docker, CI)
 - [x] Banco de dados PostgreSQL com Docker
 - [x] Migrações com Flyway
+- [x] Armazenamento de arquivos com MinIO
 
 ### Autenticação
 
@@ -214,6 +217,12 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [x] Navegação inferior mobile
 - [x] Controle de visibilidade de menus por perfil (ADMIN / SECRETARIA / DENTISTA)
 
+### Home / Dashboard
+
+- [x] Resumo diário: consultas do dia, confirmadas, canceladas
+- [x] Contador de pacientes ativos e orçamentos em aberto
+- [x] Lista de próximas consultas do dia com link para o paciente
+
 ### Pacientes
 
 - [x] CRUD completo de pacientes (backend)
@@ -224,13 +233,21 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [x] Modal de cadastro e edição
 - [x] Testes unitários do PatientService
 
+### Prontuário
+
+- [x] Página de detalhe do paciente com abas: Dados, Prontuário, Evolução & Imagens
+- [x] Odontograma interativo
+- [x] Linha do tempo de atendimentos
+- [x] Orçamentos vinculados ao paciente
+- [x] Consentimento informado
+- [x] Upload e visualização de fotos clínicas (armazenadas no MinIO)
+
 ### Auditoria
 
 - [x] Tabela `audit_log` no banco
 - [x] AuditService com transação independente (`REQUIRES_NEW`)
-- [x] Rastreabilidade de quem criou/editou cada paciente
+- [x] Rastreabilidade de quem criou/editou cada registro
 - [x] Endpoint `GET /api/auditoria` restrito a ADMIN
-- [x] Testes unitários do AuditService
 - [x] Tela de visualização do log de auditoria (frontend)
 
 ### Usuários
@@ -242,32 +259,37 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [x] Modal de cadastro e edição com senha opcional na edição
 - [x] Ativar / desativar usuário inline na lista
 
+### Dentistas
+
+- [x] Tela dedicada de cadastro e listagem de dentistas
+- [x] Filtro por role=DENTISTA no endpoint de usuários
+
 ### Notificações
 
 - [x] Sistema de toast global (sucesso e erro)
-- [x] Toast no login, cadastro e edição de pacientes e usuários
 
 ### Agenda
 
 - [x] Modelo de dados para agendamentos (`appointments`)
 - [x] CRUD de agendamentos com validação de conflito de horário (backend, TDD)
-- [x] Suporte a duração variável por procedimento (conflito proporcional à duração)
+- [x] Suporte a duração variável por procedimento
 - [x] Filtro por dentista opcional (todos ou individual)
 - [x] Tela de agenda: mini-calendário mensal + lista de consultas do dia
+- [x] Grade de horários (slots de 30 min, 08h–18h)
 - [x] Formulário com autocomplete de paciente, tipo de procedimento e duração
 - [x] Alteração de status (Agendado → Confirmado → Realizado / Cancelado)
-- [x] Testes unitários do AppointmentService (48 testes passando)
 
-### Prontuário
+### Infraestrutura e Deploy
 
-- [ ] Modelo de dados para prontuário odontológico
-- [ ] Registro de procedimentos por consulta
-- [ ] Histórico do paciente
-- [ ] Upload de imagens/radiografias
+- [x] Pipeline CI/CD com GitHub Actions
+- [x] Build e push automático de imagens Docker para o Docker Hub
+- [x] Deploy automático na Oracle Cloud via SSH após merge na `main`
+- [x] Branch protection: merge bloqueado se testes falharem
+- [ ] Configuração de domínio e HTTPS
+- [ ] Backup automático do banco de dados
 
 ### Financeiro
 
-- [ ] Orçamentos vinculados ao plano de tratamento
 - [ ] Registro de pagamentos
 - [ ] Relatório de faturamento por período
 
@@ -277,21 +299,8 @@ A especificação técnica completa está em [`docs/especificacao_sistema_consul
 - [ ] Retorno / recall automático
 - [ ] Envio de lembretes (e-mail ou WhatsApp)
 
-### Materiais e Estoque
-
-- [ ] Cadastro de materiais e equipamentos
-- [ ] Controle de estoque com alertas de quantidade mínima
-- [ ] Registro de esterilização de instrumentos
-
 ### Relatórios
 
 - [ ] Relatório de pacientes ativos/inativos
 - [ ] Relatório de produção por dentista
 - [ ] Exportação para PDF/Excel
-
-### Infraestrutura e Deploy
-
-- [ ] Pipeline CI/CD
-- [ ] Deploy automatizado na VPS Hostinger
-- [ ] Configuração de domínio e HTTPS
-- [ ] Backup automático do banco de dados
