@@ -6,7 +6,7 @@ import { Paciente, PacienteRequest, PageResponse } from '../models/paciente.mode
 @Injectable({ providedIn: 'root' })
 export class PacienteService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/pacientes';
+  private readonly apiUrl = '/api/pacientes';
 
   constructor(private http: HttpClient) {}
 

@@ -10,7 +10,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ProntuarioService {
-  private readonly apiBase = 'http://localhost:8080/api';
+  private readonly apiBase = '/api';
 
   private base(patientId: string): string {
     return `${this.apiBase}/pacientes/${patientId}/prontuario`;
