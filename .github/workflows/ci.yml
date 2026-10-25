@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-backend:
-    name: Backend — Testes
+    name: Backend - Testes
     runs-on: ubuntu-latest
 
     services:
@@ -52,7 +52,7 @@ jobs:
         run: ./mvnw test -q
 
   build-frontend:
-    name: Frontend — Build
+    name: Frontend - Build
     runs-on: ubuntu-latest
 
     steps:
