@@ -5,7 +5,7 @@ import { ToothRecord, ToothRecordRequest } from '../models/odontogram.models';
 
 @Injectable({ providedIn: 'root' })
 export class OdontogramService {
-  private readonly api = 'http://localhost:8080/api';
+  private readonly api = '/api';
 
   constructor(private http: HttpClient) {}
 

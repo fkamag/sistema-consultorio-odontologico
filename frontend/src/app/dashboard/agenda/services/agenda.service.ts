@@ -6,7 +6,7 @@ import { Agendamento, AgendamentoRequest } from '../models/agenda.models';
 @Injectable({ providedIn: 'root' })
 export class AgendaService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/agendamentos';
+  private readonly apiUrl = '/api/agendamentos';
 
   constructor(private http: HttpClient) {}
 

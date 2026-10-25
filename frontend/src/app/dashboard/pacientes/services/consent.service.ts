@@ -5,7 +5,7 @@ import { ConsentResponse, ConsentRequest } from '../models/consent.models';
 
 @Injectable({ providedIn: 'root' })
 export class ConsentService {
-  private readonly api = 'http://localhost:8080/api';
+  private readonly api = '/api';
 
   constructor(private http: HttpClient) {}
 

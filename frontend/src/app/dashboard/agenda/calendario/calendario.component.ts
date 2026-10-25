@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AgendaService } from '../services/agenda.service';
 import { UsuarioService } from '../../usuarios/services/usuario.service';
 import { ToastService } from '../../../shared/services/toast.service';
-import { Agendamento, DiaMiniCalendario } from '../models/agenda.models';
+import { Agendamento, DiaMiniCalendario, SlotHorario, SlotCategoria } from '../models/agenda.models';
 import { Usuario } from '../../usuarios/models/usuario.models';
 
 @Component({
@@ -22,9 +22,12 @@ export class CalendarioComponent implements OnInit {
   agendamentosMes: Agendamento[] = [];
   carregando = false;
 
+  modoVisualizacao: 'lista' | 'grade' = 'lista';
+
   modalAberto = false;
   agendamentoSelecionado: Agendamento | null = null;
   preData: Date | null = null;
+  preHora: string | null = null;
 
   detalhesAberto: Agendamento | null = null;
 
@@ -119,10 +122,85 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
+  alternarModo(): void {
+    this.modoVisualizacao = this.modoVisualizacao === 'lista' ? 'grade' : 'lista';
+  }
+
+  get slots(): SlotHorario[] {
+    const inicio = 8 * 60;
+    const fim    = 18 * 60;
+    const incremento = 30;
+    const dia = this.formatDate(this.diaSelecionado);
+    const slots: SlotHorario[] = [];
+
+    for (let t = inicio; t < fim; t += incremento) {
+      const hora = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+      let categoria: SlotCategoria = 'livre';
+      let label = 'Livre';
+      let detalhe = '';
+      let agendamentoId: string | undefined;
+      let patientId: string | undefined;
+
+      // Almoço 12:00–13:00
+      if (t >= 12 * 60 && t < 13 * 60) {
+        categoria = 'almoco';
+        label = 'Almoço';
+      }
+
+      if (categoria === 'livre') {
+        const consulta = this.agendamentosHoje.find(a => {
+          if (a.status === 'CANCELADO') return false;
+          const start = new Date(a.startTime);
+          const startMin = start.getHours() * 60 + start.getMinutes();
+          const endMin   = startMin + a.durationMinutes;
+          return t < endMin && (t + incremento) > startMin;
+        });
+        if (consulta) {
+          categoria = 'ocupado';
+          label = consulta.patientName;
+          detalhe = consulta.notes ?? '';
+          agendamentoId = consulta.id;
+          patientId = consulta.patientId;
+        }
+      }
+
+      slots.push({ hora, categoria, label, detalhe, agendamentoId, patientId });
+    }
+    return slots;
+  }
+
+  abrirSlotLivre(slot: SlotHorario): void {
+    if (slot.categoria !== 'livre') return;
+    const [h, m] = slot.hora.split(':').map(Number);
+    const data = new Date(this.diaSelecionado);
+    data.setHours(h, m, 0, 0);
+    this.agendamentoSelecionado = null;
+    this.preData = data;
+    this.preHora = slot.hora;
+    this.modalAberto = true;
+  }
+
+  abrirSlotOcupado(slot: SlotHorario): void {
+    if (slot.categoria !== 'ocupado' || !slot.agendamentoId) return;
+    const ag = this.agendamentosHoje.find(a => a.id === slot.agendamentoId) ?? null;
+    this.detalhesAberto = ag;
+  }
+
+  slotBorderColor(categoria: SlotCategoria): string {
+    const map: Record<SlotCategoria, string> = {
+      livre:        'var(--color-line)',
+      ocupado:      'var(--color-rust)',
+      almoco:       'var(--color-ink-soft)',
+      indisponivel: 'var(--color-gold)',
+    };
+    return map[categoria];
+  }
+
   abrirNovoNoDia(): void {
     this.agendamentoSelecionado = null;
     this.preData = new Date(this.diaSelecionado);
     this.preData.setHours(8, 0, 0, 0);
+    this.preHora = null;
     this.modalAberto = true;
   }
 
@@ -160,6 +238,7 @@ export class CalendarioComponent implements OnInit {
     this.modalAberto = false;
     this.agendamentoSelecionado = null;
     this.preData = null;
+    this.preHora = null;
   }
 
   fecharDetalhes(): void { this.detalhesAberto = null; }

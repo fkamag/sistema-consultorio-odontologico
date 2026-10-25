@@ -5,7 +5,7 @@ import { BudgetResponse, BudgetRequest, BudgetStatus } from '../models/budget.mo
 
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
-  private readonly api = 'http://localhost:8080/api';
+  private readonly api = '/api';
 
   constructor(private http: HttpClient) {}
 
