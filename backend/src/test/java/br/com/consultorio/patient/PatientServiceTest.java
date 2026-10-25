@@ -6,6 +6,7 @@ import br.com.consultorio.auth.entity.AppUser;
 import br.com.consultorio.patient.dto.PatientRequest;
 import br.com.consultorio.patient.dto.PatientResponse;
 import br.com.consultorio.patient.entity.Patient;
+import br.com.consultorio.appointment.repository.AppointmentRepository;
 import br.com.consultorio.patient.repository.PatientRepository;
 import br.com.consultorio.patient.service.PatientService;
 import br.com.consultorio.shared.exception.ConflictException;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.*;
 class PatientServiceTest {
 
     @Mock private PatientRepository repository;
+    @Mock private AppointmentRepository appointmentRepository;
     @Mock private AuditService auditService;
 
     @InjectMocks private PatientService service;
