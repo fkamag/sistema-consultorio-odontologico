@@ -1,0 +1,93 @@
+<div class="page-head">
+  <h1>Dentistas</h1>
+  <button class="btn" (click)="abrirNovo()">+ Novo Dentista</button>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/>
+    </svg>
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Buscar por nome ou e-mail…"
+      [value]="searchTerm"
+      (input)="onSearch($any($event.target).value)"
+    >
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table" *ngIf="!loading || dentistas.length > 0">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let d of dentistas"
+        class="data-row clickable"
+        (click)="abrirEditar(d.id)"
+      >
+        <td>
+          <div class="row-name">{{ d.name }}</div>
+        </td>
+        <td class="text-soft">{{ d.email }}</td>
+        <td>
+          <span class="status-dot" [class.status-dot--active]="d.active">
+            {{ d.active ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+        <td class="td-actions">
+          <button class="icon-btn" (click)="abrirEditar(d.id); $event.stopPropagation()">Editar</button>
+          <button
+            class="icon-btn"
+            [class.icon-btn--danger]="d.active"
+            (click)="toggleActive(d, $event)"
+          >{{ d.active ? 'Desativar' : 'Ativar' }}</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="loading && dentistas.length === 0" class="empty-state">
+    Carregando…
+  </div>
+
+  <div *ngIf="!loading && dentistas.length === 0" class="empty-state">
+    <strong>Nenhum dentista encontrado</strong>
+    {{ searchTerm ? 'Tente outro termo de busca.' : 'Cadastre o primeiro dentista clicando em "+ Novo Dentista".' }}
+  </div>
+</div>
+
+<div class="pagination" *ngIf="totalElements > 0">
+  <span class="pagination-info">
+    {{ primeiroItem }}–{{ ultimoItem }} de {{ totalElements }} dentista{{ totalElements !== 1 ? 's' : '' }}
+  </span>
+
+  <div class="pagination-controls">
+    <button class="icon-btn" [disabled]="page === 0" (click)="paginaAnterior()">← Anterior</button>
+    <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
+    <button class="icon-btn" [disabled]="page >= totalPages - 1" (click)="proximaPagina()">Próxima →</button>
+  </div>
+
+  <div class="page-size">
+    <span class="page-size-label">por página</span>
+    <button class="size-btn" [class.active]="pageSize === 10"  (click)="mudarTamanhoPagina(10)">10</button>
+    <button class="size-btn" [class.active]="pageSize === 20"  (click)="mudarTamanhoPagina(20)">20</button>
+    <button class="size-btn" [class.active]="pageSize === 50"  (click)="mudarTamanhoPagina(50)">50</button>
+  </div>
+</div>
+
+<app-dentista-formulario
+  *ngIf="modalAberto"
+  [dentistaId]="dentistaEditandoId"
+  (fechou)="fecharModal()"
+  (salvou)="aoSalvar()"
+>
+</app-dentista-formulario>

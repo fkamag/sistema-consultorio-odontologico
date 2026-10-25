@@ -24,6 +24,10 @@ const routes: Routes = [
       {
         path: 'auditoria',
         loadChildren: () => import('./auditoria/auditoria.module').then(m => m.AuditoriaModule)
+      },
+      {
+        path: 'dentistas',
+        loadChildren: () => import('./dentistas/dentistas.module').then(m => m.DentistasModule)
       }
     ]
   }
