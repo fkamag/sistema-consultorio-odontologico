@@ -34,6 +34,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     pendencias: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg>',
     patients: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.6 6-5.6s6 2.3 6 5.6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.6c2.5.2 4.3 2.2 4.3 5"/></svg>',
     agenda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="1.6"/><path d="M3.5 9.5h17M8 3v3.4M16 3v3.4"/></svg>',
+    grade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 6h17M3.5 10h17M3.5 14h17M3.5 18h17M8 3.5v17M8 6v12"/></svg>',
     espera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M8 9h5M8 15h3"/></svg>',
     recall: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 17v-4h4"/></svg>',
     comunicacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5z"/></svg>',
@@ -67,6 +68,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
       items: [
         { key: 'pacientes', label: 'Pacientes', icon: 'patients', route: '/dashboard/pacientes', roles: ['ADMIN', 'SECRETARIA', 'DENTISTA'] },
         { key: 'agenda', label: 'Agenda', icon: 'agenda', route: '/dashboard/agenda', roles: ['ADMIN', 'SECRETARIA', 'DENTISTA'] },
+        { key: 'grade', label: 'Grade de Horários', icon: 'grade', route: '/dashboard/agenda/grade', roles: ['ADMIN', 'SECRETARIA', 'DENTISTA'] },
         { key: 'espera', label: 'Lista de Espera', icon: 'espera', route: '/dashboard/espera', roles: ['ADMIN', 'SECRETARIA', 'DENTISTA'] },
         { key: 'recall', label: 'Retorno', icon: 'recall', route: '/dashboard/recall', roles: ['ADMIN', 'SECRETARIA', 'DENTISTA'] },
         { key: 'comunicacao', label: 'Comunicações', icon: 'comunicacao', route: '/dashboard/comunicacao', roles: ['ADMIN', 'SECRETARIA'] }
