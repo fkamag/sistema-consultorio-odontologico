@@ -15,6 +15,6 @@ import { FormularioComponent } from './formulario/formulario.component';
     CommonModule,
     ReactiveFormsModule,
     UsuariosRoutingModule
-  ]
+  ],
 })
 export class UsuariosModule {}

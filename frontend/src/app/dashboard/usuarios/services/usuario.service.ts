@@ -10,11 +10,12 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  list(search = '', page = 0, size = 20): Observable<PageResponse<Usuario>> {
-    const params = new HttpParams()
+  list(search = '', page = 0, size = 20, role?: string): Observable<PageResponse<Usuario>> {
+    let params = new HttpParams()
       .set('search', search)
       .set('page', page)
       .set('size', size);
+    if (role) params = params.set('role', role);
     return this.http.get<PageResponse<Usuario>>(this.apiUrl, { params });
   }
 

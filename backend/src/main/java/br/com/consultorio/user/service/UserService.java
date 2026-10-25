@@ -27,8 +27,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuditService auditService;
 
-    public Page<UserResponse> list(String search, int page, int size) {
-        return repository.search(search, PageRequest.of(page, size))
+    public Page<UserResponse> list(String search, String role, int page, int size) {
+        AppUser.Role roleEnum = (role != null && !role.isBlank()) ? AppUser.Role.valueOf(role) : null;
+        return repository.searchByRole(search, roleEnum, PageRequest.of(page, size))
                 .map(UserResponse::from);
     }
 

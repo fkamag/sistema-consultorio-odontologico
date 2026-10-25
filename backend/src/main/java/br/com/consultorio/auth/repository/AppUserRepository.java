@@ -26,4 +26,16 @@ public interface AppUserRepository extends JpaRepository<AppUser, UUID> {
             ORDER BY u.name ASC
             """)
     Page<AppUser> search(@Param("search") String search, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM AppUser u
+            WHERE (:search IS NULL OR :search = ''
+                   OR LOWER(u.name)  LIKE LOWER(CONCAT('%', :search, '%'))
+                   OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
+              AND (:role IS NULL OR u.role = :role)
+            ORDER BY u.name ASC
+            """)
+    Page<AppUser> searchByRole(@Param("search") String search,
+                               @Param("role") AppUser.Role role,
+                               Pageable pageable);
 }
