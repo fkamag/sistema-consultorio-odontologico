@@ -171,7 +171,7 @@ export class DetalheComponent implements OnInit {
       notes:      [''],
       totalValue: [0],
       validUntil: [''],
-      status:     ['RASCUNHO'],
+      status:     ['EM_ELABORACAO'],
     });
 
     this.consentimentoForm = this.fb.group({
@@ -513,7 +513,7 @@ export class DetalheComponent implements OnInit {
 
   abrirModalOrcamento(): void {
     const validUntil = new Date(); validUntil.setDate(validUntil.getDate() + 30);
-    this.orcamentoForm.reset({ notes: '', totalValue: 0, validUntil: validUntil.toISOString().split('T')[0], status: 'RASCUNHO' });
+    this.orcamentoForm.reset({ notes: '', totalValue: 0, validUntil: validUntil.toISOString().split('T')[0], status: 'EM_ELABORACAO' });
     this.modalOrcamento = true;
   }
 
@@ -533,11 +533,17 @@ export class DetalheComponent implements OnInit {
     this.salvandoOrcamento = true;
     const v = this.orcamentoForm.value;
     const req: BudgetRequest = {
-      dentistId:  null,
-      notes:      v.notes || null,
-      totalValue: v.totalValue ?? 0,
-      validUntil: v.validUntil || null,
-      items:      [],
+      dentistId:       null,
+      descricaoItens:  v.notes || null,
+      notes:           v.notes || null,
+      totalValue:      v.totalValue ?? 0,
+      validUntil:      v.validUntil || null,
+      status:          v.status || 'EM_ELABORACAO',
+      statusTratamento:'NAO_INICIADO',
+      situacaoSaldo:   null,
+      declaracaoIr:    null,
+      dataDeclaracao:  null,
+      items:           [],
     };
     this.budgetService.create(this.patientId, req).subscribe({
       next: r => {

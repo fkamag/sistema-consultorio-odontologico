@@ -35,7 +35,8 @@ public class DashboardService {
                 startOfDay, endOfDay, Appointment.Status.CANCELADO);
         long pacientesAtivos = patientRepository.countByDeletedAtIsNull();
         long orcamentosEmAberto = budgetRepository.countByStatusIn(
-                List.of(Budget.BudgetStatus.RASCUNHO, Budget.BudgetStatus.ENVIADO));
+                List.of(Budget.BudgetStatus.EM_ELABORACAO, Budget.BudgetStatus.ENVIADO,
+                        Budget.BudgetStatus.AGUARDANDO_APROVACAO));
 
         List<AppointmentResponse> proximas = appointmentRepository
                 .findByStartTimeBetweenOrderByStartTime(startOfDay, endOfDay)
