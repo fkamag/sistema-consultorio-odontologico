@@ -18,7 +18,12 @@ import java.util.UUID;
 public class Budget {
 
     public enum BudgetStatus {
-        RASCUNHO, ENVIADO, APROVADO, REPROVADO, EXPIRADO
+        EM_ELABORACAO, ENVIADO, AGUARDANDO_APROVACAO, APROVADO,
+        PARCIALMENTE_APROVADO, RECUSADO, CANCELADO, CONCLUIDO
+    }
+
+    public enum TratamentoStatus {
+        NAO_INICIADO, EM_ANDAMENTO, FINALIZADO
     }
 
     @Id
@@ -36,10 +41,27 @@ public class Budget {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     @Builder.Default
-    private BudgetStatus status = BudgetStatus.RASCUNHO;
+    private BudgetStatus status = BudgetStatus.EM_ELABORACAO;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @Column(name = "descricao_itens", columnDefinition = "TEXT")
+    private String descricaoItens;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_tratamento", nullable = false, length = 30)
+    @Builder.Default
+    private TratamentoStatus statusTratamento = TratamentoStatus.NAO_INICIADO;
+
+    @Column(name = "situacao_saldo", length = 100)
+    private String situacaoSaldo;
+
+    @Column(name = "declaracao_ir", length = 50)
+    private String declaracaoIr;
+
+    @Column(name = "data_declaracao")
+    private LocalDate dataDeclaracao;
 
     private LocalDate validUntil;
 
